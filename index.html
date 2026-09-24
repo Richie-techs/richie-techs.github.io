@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solstice — Log in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12201C;
+    --parchment:#F5F1E8;
+    --parchment-2:#EDE7D8;
+    --moss:#3F5D45;
+    --moss-light:#6E8A72;
+    --moss-pale:#DEE7DE;
+    --gold:#B08A4E;
+    --line: rgba(18,32,28,0.14);
+    --white:#FFFDF8;
+    --danger:#A32D2D;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--parchment);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  a{color:inherit;text-decoration:none;}
+
+  nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:28px 32px;max-width:1180px;margin:0 auto;
+  }
+  .logo{
+    font-family:'Newsreader', serif;
+    font-size:22px;font-weight:500;letter-spacing:0.01em;
+    display:flex;align-items:center;gap:9px;
+  }
+  .logo-mark{
+    width:22px;height:22px;border-radius:50%;
+    background:var(--moss);position:relative;flex-shrink:0;
+  }
+  .logo-mark::after{
+    content:'';position:absolute;top:50%;left:50%;
+    width:8px;height:8px;border-radius:50%;
+    background:var(--parchment);transform:translate(-50%,-50%);
+  }
+  .nav-note{font-size:13px;color:rgba(18,32,28,0.55);}
+
+  /* LOGIN */
+  #login-view{
+    max-width:420px;margin:60px auto 100px;padding:0 32px;
+  }
+  .login-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:40px 34px;
+    box-shadow:0 24px 60px -30px rgba(18,32,28,0.25);
+  }
+  .login-card h1{
+    font-family:'Newsreader', serif;
+    font-size:28px;font-weight:500;margin-bottom:8px;
+  }
+  .login-card .sub{
+    font-size:14px;color:rgba(18,32,28,0.6);margin-bottom:28px;
+  }
+  .field{margin-bottom:18px;}
+  .field label{
+    display:block;font-size:13px;font-weight:500;
+    margin-bottom:7px;color:rgba(18,32,28,0.8);
+  }
+  .field input{
+    width:100%;padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-size:15px;font-family:inherit;
+    background:var(--parchment);
+    color:var(--ink);
+  }
+  .field input:focus{
+    outline:none;border-color:var(--moss);
+    box-shadow:0 0 0 3px var(--moss-pale);
+  }
+  .field-error{
+    font-size:12px;color:var(--danger);margin-top:6px;display:none;
+  }
+  .field.has-error input{border-color:var(--danger);}
+  .field.has-error .field-error{display:block;}
+
+  .login-row{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:13px;margin:4px 0 22px;
+  }
+  .login-row label{display:flex;align-items:center;gap:7px;color:rgba(18,32,28,0.7);cursor:pointer;}
+  .login-row a{color:var(--moss);}
+
+  .btn{
+    font-size:14px;font-weight:500;padding:13px 20px;
+    border-radius:8px;border:1px solid transparent;
+    cursor:pointer;font-family:inherit;width:100%;
+  }
+  .btn-solid{background:var(--ink);color:var(--parchment);}
+  .btn-solid:hover{background:#1c2f28;}
+
+  .login-foot{
+    text-align:center;font-size:13px;color:rgba(18,32,28,0.6);
+    margin-top:22px;
+  }
+  .login-foot a{color:var(--moss);font-weight:500;}
+
+  .demo-note{
+    max-width:420px;margin:0 auto;padding:0 32px;
+    font-size:12px;color:rgba(18,32,28,0.45);text-align:center;
+  }
+
+  /* DASHBOARD */
+  #dashboard-view{display:none;max-width:1180px;margin:0 auto;padding:8px 32px 100px;}
+  .dash-top{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:36px;flex-wrap:wrap;gap:16px;
+  }
+  .dash-greeting{font-family:'Newsreader', serif;font-size:30px;font-weight:500;}
+  .dash-sub{font-size:14px;color:rgba(18,32,28,0.6);margin-top:4px;}
+  .btn-ghost{
+    font-size:14px;font-weight:500;padding:11px 18px;
+    border-radius:8px;border:1px solid var(--line);
+    background:transparent;color:var(--ink);cursor:pointer;font-family:inherit;
+  }
+  .btn-ghost:hover{background:var(--parchment-2);}
+
+  .dash-grid{
+    display:grid;grid-template-columns:1.2fr 1fr;gap:24px;margin-bottom:24px;
+  }
+  .balance-card{
+    background:var(--ink);color:var(--parchment);
+    border-radius:16px;padding:32px;
+  }
+  .card-label{font-size:13px;color:rgba(245,241,232,0.6);margin-bottom:6px;}
+  .card-account{font-size:14px;color:rgba(245,241,232,0.85);font-family:'IBM Plex Mono', monospace;margin-bottom:26px;}
+  .balance-amount{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:40px;font-weight:500;letter-spacing:-0.01em;margin-bottom:4px;
+  }
+  .balance-cents{opacity:0.5;font-size:24px;}
+  .balance-delta{font-size:14px;color:var(--moss-light);margin-bottom:0;}
+  .balance-delta::before{content:'↑ ';}
+
+  .side-card{
+    background:var(--white);border:1px solid var(--line);
+    border-radius:16px;padding:24px;
+  }
+  .side-card h3{font-size:15px;font-weight:500;margin-bottom:16px;}
+  .side-row{display:flex;justify-content:space-between;font-size:14px;padding:9px 0;border-bottom:1px solid var(--line);}
+  .side-row:last-child{border-bottom:none;}
+  .side-row-label{color:rgba(18,32,28,0.6);}
+  .side-row-value{font-family:'IBM Plex Mono', monospace;}
+
+  .tx-card{
+    background:var(--white);border:1px solid var(--line);
+    border-radius:16px;padding:24px 28px;
+  }
+  .tx-card h3{font-size:15px;font-weight:500;margin-bottom:16px;}
+  .tx-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:13px 0;border-bottom:1px solid var(--line);
+  }
+  .tx-row:last-child{border-bottom:none;}
+  .tx-left{display:flex;align-items:center;gap:12px;}
+  .tx-dot{width:8px;height:8px;border-radius:50%;background:var(--moss);flex-shrink:0;}
+  .tx-name{font-size:14px;font-weight:500;}
+  .tx-date{font-size:12px;color:rgba(18,32,28,0.5);}
+  .tx-amt{font-family:'IBM Plex Mono', monospace;font-size:14px;}
+  .tx-amt.pos{color:var(--moss);}
+
+  @media (max-width:760px){
+    .dash-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><span class="logo-mark"></span>Solstice</div>
+  <div class="nav-note">Demo interface — placeholder data only</div>
+</nav>
+
+<div id="login-view">
+  <div class="login-card">
+    <h1>Welcome back</h1>
+    <p class="sub">Log in to view your account.</p>
+
+    <form id="login-form" novalidate>
+      <div class="field" id="email-field">
+        <label for="email">Email</label>
+        <input type="text" id="email" placeholder="name@example.com" autocomplete="username">
+        <div class="field-error" id="email-error">Enter your email to continue</div>
+      </div>
+      <div class="field" id="password-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+        <div class="field-error" id="password-error">Enter your password to continue</div>
+      </div>
+      <div class="login-row">
+        <label><input type="checkbox" id="remember"> Remember me</label>
+        <a href="#" onclick="return false;">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn btn-solid">Log in</button>
+    </form>
+
+    <p class="login-foot">Don't have an account? <a href="#" onclick="return false;">Open one</a></p>
+  </div>
+</div>
+<p class="demo-note">This is a front-end demo. No real accounts, credentials, or funds are involved — entering any email and password reveals a sample dashboard below.</p>
+
+<div id="dashboard-view">
+  <div class="dash-top">
+    <div>
+      <div class="dash-greeting">Good afternoon</div>
+      <div class="dash-sub">Here's where things stand today.</div>
+    </div>
+    <button class="btn-ghost" onclick="logOut()">Log out</button>
+  </div>
+
+  <div class="dash-grid">
+    <div class="balance-card">
+      <div class="card-label">Available balance</div>
+      <div class="card-account">Checking •••• 4417</div>
+      <div class="balance-amount">$8,412<span class="balance-cents">.60</span></div>
+      <div class="balance-delta">$186.40 this week</div>
+    </div>
+    <div class="side-card">
+      <h3>Accounts</h3>
+      <div class="side-row"><span class="side-row-label">Savings</span><span class="side-row-value">$14,205.00</span></div>
+      <div class="side-row"><span class="side-row-label">Pending</span><span class="side-row-value">−$42.10</span></div>
+      <div class="side-row"><span class="side-row-label">Next transfer</span><span class="side-row-value">Mon, Sep 29</span></div>
+    </div>
+  </div>
+
+  <div class="tx-card">
+    <h3>Recent activity</h3>
+    <div class="tx-row">
+      <div class="tx-left"><span class="tx-dot"></span><div><div class="tx-name">Grocery Mart</div><div class="tx-date">Today</div></div></div>
+      <div class="tx-amt">−$54.20</div>
+    </div>
+    <div class="tx-row">
+      <div class="tx-left"><span class="tx-dot"></span><div><div class="tx-name">Payroll deposit</div><div class="tx-date">Yesterday</div></div></div>
+      <div class="tx-amt pos">+$1,240.00</div>
+    </div>
+    <div class="tx-row">
+      <div class="tx-left"><span class="tx-dot"></span><div><div class="tx-name">Round-up to savings</div><div class="tx-date">Yesterday</div></div></div>
+      <div class="tx-amt">−$0.68</div>
+    </div>
+    <div class="tx-row">
+      <div class="tx-left"><span class="tx-dot"></span><div><div class="tx-name">Electric Co.</div><div class="tx-date">Sep 21</div></div></div>
+      <div class="tx-amt">−$88.10</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var form = document.getElementById('login-form');
+  var emailField = document.getElementById('email-field');
+  var passwordField = document.getElementById('password-field');
+  var emailInput = document.getElementById('email');
+  var passwordInput = document.getElementById('password');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var valid = true;
+
+    if(!emailInput.value.trim()){
+      emailField.classList.add('has-error');
+      valid = false;
+    } else {
+      emailField.classList.remove('has-error');
+    }
+
+    if(!passwordInput.value.trim()){
+      passwordField.classList.add('has-error');
+      valid = false;
+    } else {
+      passwordField.classList.remove('has-error');
+    }
+
+    if(!valid) return;
+
+    document.getElementById('login-view').style.display = 'none';
+    document.querySelector('.demo-note').style.display = 'none';
+    document.getElementById('dashboard-view').style.display = 'block';
+  });
+
+  emailInput.addEventListener('input', function(){
+    if(emailInput.value.trim()) emailField.classList.remove('has-error');
+  });
+  passwordInput.addEventListener('input', function(){
+    if(passwordInput.value.trim()) passwordField.classList.remove('has-error');
+  });
+
+  function logOut(){
+    document.getElementById('dashboard-view').style.display = 'none';
+    document.getElementById('login-view').style.display = 'block';
+    document.querySelector('.demo-note').style.display = 'block';
+    form.reset();
+  }
+</script>
+
+</body>
+  </html>
+          
