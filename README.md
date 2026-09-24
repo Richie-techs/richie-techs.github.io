@@ -1,1 +1,0 @@
-# richie-techs.github.io
