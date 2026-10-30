@@ -21,11 +21,10 @@
       <h1>Your shipment.<br>Every step. In view.</h1>
       <p>Track your goods from dispatch to delivery with clear shipment updates, estimated arrival information, and one place for your tracking details.</p>
       <form class="track-box" id="trackingForm">
-        <input id="trackingInput" aria-label="Tracking number" placeholder="Enter tracking number (e.g. ST-2048-7319)" autocomplete="off" required />
+        <input id="trackingInput" aria-label="Tracking number" placeholder="Enter tracking number" autocomplete="off" required />
         <button class="btn" type="submit">Track package →</button>
       </form>
-      <div class="hint">Try demo IDs: <b>ST-2048-7319</b> or <b>ST-8851-2046</b></div>
-      <div id="errorMessage" class="toast" role="alert">We couldn't find that tracking number. Try one of the demo IDs above.</div>
+      <div id="errorMessage" class="toast" role="alert">We couldn't find that tracking number.</div>
     </div>
     <div class="hero-art" aria-hidden="true">
       <div class="orbit"></div><div class="parcel"></div>
@@ -48,9 +47,9 @@
       <div class="shipment-info">
         <div class="small-label">Shipment route</div>
         <div class="route">
-          <div><div class="small-label">From</div><div class="city" id="originCity">Accra</div><div class="country" id="originCountry">Ghana</div></div>
+          <div><div class="small-label">From</div><div class="city" id="originCity">Texas</div><div class="country" id="originCountry">USA</div></div>
           <div class="route-line"></div>
-          <div class="right"><div class="small-label">To</div><div class="city" id="destCity">Kumasi</div><div class="country" id="destCountry">Ghana</div></div>
+          <div class="right"><div class="small-label">To</div><div class="city" id="destCity">San Antonio</div><div class="country" id="destCountry">USA</div></div>
         </div>
         <div class="details">
           <div><div class="detail-label">Estimated delivery</div><div class="detail-value" id="eta">Oct 31, 2026</div></div>
@@ -70,9 +69,9 @@
     <article class="feature"><div class="feature-icon">🔔</div><h3>Clear status updates</h3><p>See when a package is booked, dispatched, in transit, out for delivery, or delivered.</p></article>
     <article class="feature"><div class="feature-icon">🛡️</div><h3>Shipment details in one place</h3><p>Keep your tracking number, delivery estimate, route, and service details together.</p></article>
   </div>
-  <section class="cta" id="how"><div><h3>Shipping should feel straightforward.</h3><p>Enter your tracking number above to view the demo shipment journey.</p></div><a class="btn" href="#track">Track a shipment</a></section>
+  <section class="cta" id="how"><div><h3>Shipping should feel straightforward.</h3><p>Enter your tracking number above to view the shipment journey.</p></div><a class="btn" href="#track">Track a shipment</a></section>
 </main>
-<footer><div class="shell footer-inner"><div class="footer-brand">↗ ShipTrack</div><div>Simple shipment tracking for goods on the move.</div><div>© 2026 ShipTrack · Demo website</div></div></footer>
+<footer><div class="shell footer-inner"><div class="footer-brand">↗ ShipTrack</div><div>Simple shipment tracking for goods on the move.</div><div>© 2026 ShipTrack.</div></div></footer>
   <script src="script.js"></script>
 </body>
 </html>
