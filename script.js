@@ -1,6 +1,6 @@
 const shipments = {
   "ST-2048-7319": {
-    status:"In transit", origin:"Texas", originCountry:"USA", dest:"San Antonio", destCountry:"USA",
+    status:"In transit", origin:"Texas", originCountry:"USA", dest:"San Antonio","TX78239-3621, destCountry:"USA",
     eta:"Oct 31, 2026", service:"Express delivery", packageType:"General goods", updated:"Oct 29, 2026 · 1:20 PM", current:2,
     steps:[
       ["Shipment booked","Your shipping details have been received.","Oct 27, 2026 · 9:10 AM"],
