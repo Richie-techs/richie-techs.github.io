@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Track your shipment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E8EDEF;--surface:#FFFFFF;--ink:#0F1B26;--muted:#52606D;--line:#C9D3D8;
+  --accent:#E8590C;--on-accent:#FFFFFF;--blue:#1F4E79;--ok:#2B7A4B;--warn:#A86500;
+  --display:'Big Shoulders Display','Arial Narrow',Impact,sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0E161D;--surface:#16212B;--ink:#E7EDF1;--muted:#9AA8B3;--line:#2A3946;--accent:#FF8A4C;--on-accent:#0E161D;--blue:#6FA8DC;--ok:#5CC38A;--warn:#E5B04A;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#0E161D;--surface:#16212B;--ink:#E7EDF1;--muted:#9AA8B3;--line:#2A3946;--accent:#FF8A4C;--on-accent:#0E161D;--blue:#6FA8DC;--ok:#5CC38A;--warn:#E5B04A;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body)}
+main{max-width:720px;margin:0 auto;padding:28px 18px 56px}
+h1{font:900 clamp(44px,12vw,84px)/.92 var(--display);letter-spacing:.005em;margin:6px 0 10px}
+.lede{color:var(--muted);margin:0 0 22px;max-width:46ch}
+form{display:flex;gap:8px;flex-wrap:wrap}
+input{flex:1 1 220px;min-width:0;font:600 18px var(--body);padding:15px 14px;border:2px solid var(--ink);border-radius:4px;background:var(--surface);color:var(--ink)}
+button{font:600 17px var(--body);padding:15px 22px;border:0;border-radius:4px;background:var(--accent);color:var(--on-accent);cursor:pointer}
+button:hover{filter:brightness(1.06)}
+:is(input,button,.chip):focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.try{margin:14px 0 0;color:var(--muted);font-size:14px}
+.chip{font:500 14px var(--body);background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:5px 12px;margin:4px 6px 0 0;cursor:pointer}
+.chip:hover{border-color:var(--ink)}
+#result{margin-top:30px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.num{font:700 15px var(--body);color:var(--muted);margin:0}
+.status{font:900 clamp(30px,8vw,44px)/1 var(--display);margin:2px 0 0}
+.badge{font-weight:600;font-size:14px;padding:4px 10px;border-radius:999px;border:1.5px solid currentColor}
+.s-transit{color:var(--blue)}.s-done{color:var(--ok)}.s-hold{color:var(--warn)}
+.eta{margin:14px 0 0}.eta b{font-weight:600}
+.route{margin:26px 0 8px}
+.bar{position:relative;height:6px;background:var(--line);border-radius:3px}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--accent);width:0;transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.dot{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);box-shadow:0 0 0 2px var(--accent);left:0;transition:left .9s cubic-bezier(.2,.7,.2,1)}
+.ends{display:flex;justify-content:space-between;gap:12px;margin-top:14px;font-size:15px}
+.ends div:last-child{text-align:right}
+.ends small{display:block;color:var(--muted);font-size:13px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin:22px 0 0;padding-top:18px;border-top:1px solid var(--line)}
+.facts dt{color:var(--muted);font-size:13px}.facts dd{margin:0;font-weight:600}
+h2{font:700 26px/1 var(--display);margin:30px 0 14px}
+ol{list-style:none;margin:0;padding:0}
+li.ev{position:relative;padding:0 0 22px 28px;border-left:2px solid var(--line);margin-left:7px}
+li.ev:last-child{border-left-color:transparent;padding-bottom:0}
+li.ev::before{content:"";position:absolute;left:-8px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+li.ev.done::before{background:var(--ok);border-color:var(--ok)}
+li.ev.now::before{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 25%,transparent)}
+li.ev.hold::before{background:var(--warn);border-color:var(--warn)}
+li.ev.next{color:var(--muted)}
+.ev b{display:block;font-weight:600}
+.ev span{font-size:14px;color:var(--muted)}
+.err{border-color:var(--warn)}
+.err p{margin:6px 0 0;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.fill,.dot{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Where’s my shipment?</h1>
+  <p class="lede">Enter the tracking number from your booking confirmation to see where your goods are and when they arrive.</p>
+  <form id="f" autocomplete="off">
+    <input id="q" aria-label="Tracking number" placeholder="e.g. SHP-48210" autocapitalize="characters" spellcheck="false">
+    <button type="submit">Track shipment</button>
+  </form>
+  <p class="try">Demo numbers:
+    <button class="chip" type="button" data-n="SHP-48210">SHP-48210</button><button class="chip" type="button" data-n="SHP-10377">SHP-10377</button><button class="chip" type="button" data-n="SHP-77002">SHP-77002</button>
+  </p>
+  <section id="result" aria-live="polite"></section>
+</main>
+<script>
+var D={
+"SHP-48210":{st:"In transit",cls:"s-transit",pct:58,from:["Shenzhen, CN","Departed 3 Oct"],to:["Rotterdam, NL","Arrives 4 Nov"],eta:"Wednesday, 4 November",facts:[["Cargo","Electronics, 12 pallets"],["Weight","3,420 kg"],["Service","Sea freight"]],ev:[
+["done","Picked up from sender","Shenzhen, CN · 1 Oct, 09:40"],["done","Loaded on vessel","Yantian Port · 3 Oct, 18:15"],["done","Transshipment","Singapore · 14 Oct, 07:30"],["now","At sea, on schedule","Indian Ocean · updated today, 06:00"],["next","Arrives at port","Rotterdam, NL · expected 4 Nov"],["next","Delivered to receiver","Expected 6 Nov"]]},
+"SHP-10377":{st:"Delivered",cls:"s-done",pct:100,from:["Hamburg, DE","Departed 18 Oct"],to:["Lyon, FR","Delivered 24 Oct"],eta:"Delivered Saturday, 24 October at 11:05",facts:[["Cargo","Furniture, 4 crates"],["Weight","860 kg"],["Service","Road freight"]],ev:[
+["done","Picked up from sender","Hamburg, DE · 18 Oct, 08:20"],["done","Cleared depot","Frankfurt, DE · 20 Oct, 13:00"],["done","Out for delivery","Lyon, FR · 24 Oct, 07:45"],["done","Delivered, signed by M. Girard","Lyon, FR · 24 Oct, 11:05"]]},
+"SHP-77002":{st:"Held at customs",cls:"s-hold",pct:72,from:["Istanbul, TR","Departed 22 Oct"],to:["Hamburg, DE","Was due 30 Oct"],eta:"New date to be confirmed after clearance",facts:[["Cargo","Textiles, 30 cartons"],["Weight","1,180 kg"],["Service","Air freight"]],ev:[
+["done","Picked up from sender","Istanbul, TR · 22 Oct, 10:10"],["done","Flown to destination","Hamburg Airport · 26 Oct, 21:30"],["hold","Held for inspection","Customs · missing commercial invoice"],["next","Release and local delivery","Date to be confirmed"]]}
+};
+var q=document.getElementById("q"),out=document.getElementById("result");
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function show(raw){
+  var n=raw.trim().toUpperCase(),d=D[n];out.textContent="";
+  if(!n){return}
+  if(!d){var c=el("div","card err");c.appendChild(el("b",null,"No shipment found for “"+raw.trim()+"”"));c.appendChild(el("p",null,"Check the number on your booking confirmation. It starts with SHP- followed by five digits."));out.appendChild(c);return}
+  var c=el("div","card"),top=el("div","top"),l=el("div");
+  l.appendChild(el("p","num",n));l.appendChild(el("p","status "+d.cls,d.st));top.appendChild(l);
+  top.appendChild(el("span","badge "+d.cls,d.pct===100?"Complete":d.pct+"% of route"));c.appendChild(top);
+  var e=el("p","eta");e.appendChild(el("b",null,d.eta));c.appendChild(e);
+  var r=el("div","route"),bar=el("div","bar"),f=el("div","fill"),dot=el("div","dot");
+  bar.appendChild(f);bar.appendChild(dot);r.appendChild(bar);
+  var en=el("div","ends");
+  d.from.concat(d.to).forEach(function(){});
+  var a=el("div");a.appendChild(el("b",null,d.from[0]));a.appendChild(el("small",null,d.from[1]));
+  var z=el("div");z.appendChild(el("b",null,d.to[0]));z.appendChild(el("small",null,d.to[1]));
+  en.appendChild(a);en.appendChild(z);r.appendChild(en);c.appendChild(r);
+  var fl=el("dl","facts");d.facts.forEach(function(p){var w=el("div");w.appendChild(el("dt",null,p[0]));w.appendChild(el("dd",null,p[1]));fl.appendChild(w)});c.appendChild(fl);
+  out.appendChild(c);out.appendChild(el("h2",null,"Journey so far"));
+  var ol=document.createElement("ol");
+  d.ev.forEach(function(v){var li=el("li","ev "+v[0]);li.appendChild(el("b",null,v[1]));li.appendChild(el("span",null,v[2]));ol.appendChild(li)});
+  out.appendChild(ol);
+  requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.width=d.pct+"%";dot.style.left=d.pct+"%"})});
+}
+document.getElementById("f").addEventListener("submit",function(ev){ev.preventDefault();show(q.value)});
+document.querySelectorAll(".chip").forEach(function(b){b.addEventListener("click",function(){q.value=b.dataset.n;show(b.dataset.n)})});
+</script>
+</body>
+</html>
