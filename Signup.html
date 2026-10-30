@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShipTrack - Create Account</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eef2f7;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.signup-box {
+    background: white;
+    width: 100%;
+    max-width: 430px;
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px #0001;
+}
+
+h1 {
+    text-align: center;
+    color: #2563eb;
+}
+
+h2 {
+    color: #1e293b;
+}
+
+p {
+    color: #64748b;
+    line-height: 1.5;
+}
+
+label {
+    display: block;
+    margin-top: 17px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    margin-top: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 24px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+#message {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+</style>
+</head>
+
+<body>
+
+<div class="signup-box">
+
+<h1>↗ ShipTrack</h1>
+
+<h2>Create your account</h2>
+
+<p>
+Register to access shipment tracking and delivery updates.
+</p>
+
+<form id="signupForm">
+
+<label for="fullName">Full Name</label>
+<input
+    type="text"
+    id="fullName"
+    placeholder="Enter your full name"
+    required
+>
+
+<label for="email">Email Address</label>
+<input
+    type="email"
+    id="email"
+    placeholder="Enter your email"
+    required
+>
+
+<label for="password">Password</label>
+<input
+    type="password"
+    id="password"
+    placeholder="At least 8 characters"
+    minlength="8"
+    required
+>
+
+<label for="confirmPassword">Confirm Password</label>
+<input
+    type="password"
+    id="confirmPassword"
+    placeholder="Enter password again"
+    minlength="8"
+    required
+>
+
+<button type="submit" id="signupButton">
+    Create Account
+</button>
+
+<p id="message" role="status"></p>
+
+</form>
+
+<div class="footer">
+<p>
+Already have an account?
+<a href="index.html">Login here</a>
+</p>
+</div>
+
+</div>
+
+<script>
+
+// SUPABASE CONFIGURATION
+const SUPABASE_URL = "YOUR_PROJECT_URL";
+const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+// REGISTER NEW CUSTOMER
+document.getElementById("signupForm")
+.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const fullName =
+        document.getElementById("fullName").value.trim();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+    const message =
+        document.getElementById("message");
+
+    const button =
+        document.getElementById("signupButton");
+
+    if (password !== confirmPassword) {
+        message.textContent = "Passwords do not match.";
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Creating account...";
+    message.textContent = "";
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.auth.signUp({
+
+                email: email,
+                password: password,
+
+                options: {
+                    data: {
+                        full_name: fullName
+                    },
+
+                    emailRedirectTo: window.location.origin +
+                        window.location.pathname.replace(
+                            /signup\.html$/,
+                            "index.html"
+                        )
+                }
+
+            });
+
+        if (error) {
+            message.textContent = error.message;
+            button.disabled = false;
+            button.textContent = "Create Account";
+            return;
+        }
+
+        if (data.session) {
+
+            message.textContent =
+                "Account created successfully! Redirecting...";
+
+            window.location.href = "tracking.html";
+
+        } else {
+
+            message.textContent =
+                "Account created! Please check your email and confirm your account before logging in.";
+
+            button.disabled = false;
+            button.textContent = "Create Account";
+
+        }
+
+    } catch (error) {
+
+        message.textContent =
+            "Connection error. Please try again.";
+
+        button.disabled = false;
+        button.textContent = "Create Account";
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
+  
