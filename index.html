@@ -1,77 +1,213 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ShipTrack — Shipment Tracking</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwiftShip - Login</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eef2f7;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-box {
+    background: white;
+    width: 100%;
+    max-width: 400px;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px #0001;
+}
+
+h1 {
+    color: #2563eb;
+    text-align: center;
+}
+
+h2 {
+    color: #1e293b;
+}
+
+p {
+    color: #64748b;
+}
+
+label {
+    display: block;
+    margin-top: 18px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    margin-top: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.password-option {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.password-option input {
+    width: auto;
+    margin: 0;
+}
+
+#message {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+</style>
 </head>
+
 <body>
-<header>
-  <div class="shell nav">
-    <a class="brand" href="#"><span class="logo">↗</span> ShipTrack</a>
-    <nav class="navlinks"><a href="#track">Track shipment</a><a href="#services">Services</a><a href="#how">How it works</a></nav>
-    <div class="navright"><a class="login" href="#track">Track a package</a><a class="btn" href="#track">Get started</a></div>
-  </div>
-</header>
-<section class="hero" id="track">
-  <div class="shell hero-inner">
-    <div>
-      <div class="eyebrow">Shipping visibility, made simple</div>
-      <h1>Your shipment.<br>Every step. In view.</h1>
-      <p>Track your goods from dispatch to delivery with clear shipment updates, estimated arrival information, and one place for your tracking details.</p>
-      <form class="track-box" id="trackingForm">
-        <input id="trackingInput" aria-label="Tracking number" placeholder="Enter tracking number" autocomplete="off" required />
-        <button class="btn" type="submit">Track package →</button>
-      </form>
-      <div id="errorMessage" class="toast" role="alert">We couldn't find that tracking number.</div>
-    </div>
-    <div class="hero-art" aria-hidden="true">
-      <div class="orbit"></div><div class="parcel"></div>
-      <div class="floating float-one">Shipment status<strong><span class="status-dot"></span>In transit</strong></div>
-      <div class="floating float-two">Delivery estimate<strong>Oct 31, 2026</strong></div>
-    </div>
-  </div>
-</section>
-<main class="shell">
-  <div class="section-head">
-    <div><h2>Track your shipment</h2><p>Get a clear view of where your goods are and what happens next.</p></div>
-    <a class="sample" href="#" id="demoLink">Load  shipment ↗</a>
-  </div>
-  <section class="result" id="result" aria-live="polite">
-    <div class="result-top">
-      <div><div class="small-label">Tracking number</div><div class="tracking-id" id="resultId">ST-2048-7319</div></div>
-      <div class="pill" id="statusPill"><span class="status-dot"></span> In transit</div>
-    </div>
-    <div class="result-body">
-      <div class="shipment-info">
-        <div class="small-label">Shipment route</div>
-        <div class="route">
-          <div><div class="small-label">From</div><div class="city" id="originCity">Texas</div><div class="country" id="originCountry">USA</div></div>
-          <div class="route-line"></div>
-          <div class="right"><div class="small-label">To</div><div class="city" id="destCity">San Antonio</div><div class="country" id="destCountry">USA</div></div>
-        </div>
-        <div class="details">
-          <div><div class="detail-label">Estimated delivery</div><div class="detail-value" id="eta">Oct 31, 2026</div></div>
-          <div><div class="detail-label">Shipping service</div><div class="detail-value" id="service">Express delivery</div></div>
-          <div><div class="detail-label">Package type</div><div class="detail-value" id="packageType">General goods</div></div>
-          <div><div class="detail-label">Last updated</div><div class="detail-value" id="updated">Oct 29, 2026 · 1:20 PM</div></div>
-        </div>
-      </div>
-      <div class="timeline">
-        <h3>Shipment progress</h3>
-        <div id="timelineSteps"></div>
-      </div>
-    </div>
-  </section>
-  <div class="cards" id="services">
-    <article class="feature"><div class="feature-icon">📍</div><h3>End-to-end visibility</h3><p>Follow your parcel's journey with a simple shipment timeline and key location updates.</p></article>
-    <article class="feature"><div class="feature-icon">🔔</div><h3>Clear status updates</h3><p>See when a package is booked, dispatched, in transit, out for delivery, or delivered.</p></article>
-    <article class="feature"><div class="feature-icon">🛡️</div><h3>Shipment details in one place</h3><p>Keep your tracking number, delivery estimate, route, and service details together.</p></article>
-  </div>
-  <section class="cta" id="how"><div><h3>Shipping should feel straightforward.</h3><p>Enter your tracking number above to view the shipment journey.</p></div><a class="btn" href="#track">Track a shipment</a></section>
-</main>
-<footer><div class="shell footer-inner"><div class="footer-brand">↗ ShipTrack</div><div>Simple shipment tracking for goods on the move.</div><div>© 2026 ShipTrack.</div></div></footer>
-  <script src="script.js"></script>
+
+<div class="login-box">
+
+<h1>SwiftShip</h1>
+
+<h2>Welcome Back!</h2>
+<p>Sign in to access your shipment dashboard.</p>
+
+<form id="loginForm">
+
+<label>Email Address</label>
+<input type="email" id="email"
+placeholder="Enter your email" required>
+
+<label>Password</label>
+<input type="password" id="password"
+placeholder="Enter your password" required>
+
+<div class="password-option">
+<input type="checkbox" id="showPassword">
+<label for="showPassword" style="margin:0">
+Show password
+</label>
+</div>
+
+<button type="submit" id="loginButton">
+Sign In
+</button>
+
+</form>
+
+<p id="message"></p>
+
+</div>
+
+<script>
+
+// Supabase credentials
+const SUPABASE_URL = "https://vaebulmgychqvogzqesi.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_U8ILGJoA9hWP8HZnQ8qF3g_3ecS_IeN";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+// Redirect existing logged-in users
+async function checkSession() {
+    const { data } =
+        await supabaseClient.auth.getSession();
+
+    if (data.session) {
+        window.location.replace("login.html");
+    }
+}
+
+checkSession();
+
+// Show or hide password
+document.getElementById("showPassword")
+.addEventListener("change", function() {
+
+    document.getElementById("password").type =
+        this.checked ? "text" : "password";
+
+});
+
+// Login
+document.getElementById("loginForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const email =
+        document.getElementById("email").value;
+
+    const password =
+        document.getElementById("password").value;
+
+    const message =
+        document.getElementById("message");
+
+    const button =
+        document.getElementById("loginButton");
+
+    button.disabled = true;
+    button.textContent = "Signing in...";
+    message.textContent = "";
+
+    const { error } =
+        await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+    if (error) {
+        message.textContent = error.message;
+        button.disabled = false;
+        button.textContent = "Sign In";
+        return;
+    }
+
+    window.location.href = "login.html";
+
+});
+
+</script>
+
 </body>
 </html>
+
+  
