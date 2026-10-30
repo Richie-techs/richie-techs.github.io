@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwiftShip - Login</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-box {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px #0001;
+}
+
+h1 {
+    text-align: center;
+    color: #2563eb;
+}
+
+h2 {
+    color: #1e293b;
+}
+
+p {
+    color: #64748b;
+    font-size: 14px;
+}
+
+label {
+    display: block;
+    margin-top: 18px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    margin-top: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 22px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+<h1>SwiftShip</h1>
+
+<h2>Welcome Back!</h2>
+<p>Login to access your shipment dashboard.</p>
+
+<form id="loginForm">
+
+<label>Email Address</label>
+<input type="email" id="email"
+placeholder="Enter your email" required>
+
+<label>Password</label>
+<input type="password" id="password"
+placeholder="Enter your password" required>
+
+<button type="submit" id="loginButton">
+Sign In
+</button>
+
+</form>
+
+<p id="message"></p>
+
+<div class="footer">
+<p>Don't have an account?
+<a href="signup.html">Create Account</a>
+</p>
+</div>
+
+</div>
+
+<script>
+
+// Your Supabase credentials
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+document.getElementById("loginForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const message = document.getElementById("message");
+    const button = document.getElementById("loginButton");
+
+    button.disabled = true;
+    button.textContent = "Logging in...";
+
+    const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+    if (error) {
+        message.textContent = error.message;
+        button.disabled = false;
+        button.textContent = "Sign In";
+        return;
+    }
+
+    window.location.href = "tracking.html";
+
+});
+
+</script>
+
+</body>
+</html>
