@@ -1,6 +1,6 @@
 const shipments = {
   "ST-2048-7319": {
-    status:"In transit", origin:"Accra", originCountry:"Ghana", dest:"Kumasi", destCountry:"Ghana",
+    status:"In transit", origin:"Texas", originCountry:"USA", dest:"San Antonio", destCountry:"USA",
     eta:"Oct 31, 2026", service:"Express delivery", packageType:"General goods", updated:"Oct 29, 2026 · 1:20 PM", current:2,
     steps:[
       ["Shipment booked","Your shipping details have been received.","Oct 27, 2026 · 9:10 AM"],
@@ -11,7 +11,7 @@ const shipments = {
     ]
   },
   "ST-8851-2046": {
-    status:"Delivered", origin:"Tema", originCountry:"Ghana", dest:"Takoradi", destCountry:"Ghana",
+    status:"Delivered", origin:"Tema", originCountry:"Ghana", dest:"Kumasi", destCountry:"Ghana",
     eta:"Oct 28, 2026", service:"Standard delivery", packageType:"Documents", updated:"Oct 28, 2026 · 4:35 PM", current:4,
     steps:[
       ["Shipment booked","Your shipping details have been received.","Oct 25, 2026 · 8:05 AM"],
