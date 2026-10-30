@@ -151,7 +151,7 @@ async function checkSession() {
         await supabaseClient.auth.getSession();
 
     if (data.session) {
-        window.location.replace("login.html");
+        window.location.replace("Login.html");
     }
 }
 
@@ -201,7 +201,7 @@ document.getElementById("loginForm")
         return;
     }
 
-    window.location.href = "login.html";
+    window.location.href = "Login.html";
 
 });
 
