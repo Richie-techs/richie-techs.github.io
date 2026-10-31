@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sign in to your ShipTrack shipment account.">
+  <title>ShipTrack — Login</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js" defer></script>
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <a class="brand auth-brand" href="index.html"><span class="logo">↗</span> ShipTrack</a>
+    <p class="eyebrow">CUSTOMER PORTAL</p>
+    <h1>Welcome back</h1>
+    <p class="muted">Sign in to access your shipment tracking dashboard.</p>
+
+    <form id="loginForm">
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" autocomplete="email"
+             placeholder="you@example.com" required>
+
+      <label for="password">Password</label>
+      <div class="password-wrap">
+        <input id="password" name="password" type="password"
+               autocomplete="current-password" placeholder="Enter your password" required>
+        <button class="password-toggle" type="button" id="togglePassword"
+                aria-label="Show password">Show</button>
+      </div>
+
+      <div class="form-row">
+        <label class="check-label"><input type="checkbox" id="remember" checked> Keep me signed in</label>
+        <button class="text-button" type="button" id="forgotPassword">Forgot password?</button>
+      </div>
+
+      <button class="btn primary full" type="submit" id="loginButton">Sign in</button>
+      <p class="form-message" id="loginMessage" role="status" aria-live="polite"></p>
+    </form>
+
+    <p class="auth-switch">New to ShipTrack? <a href="signup.html">Create an account</a></p>
+    <p class="fine-print">Your account gives you access to your shipment information.</p>
+  </main>
+</body>
+</html>

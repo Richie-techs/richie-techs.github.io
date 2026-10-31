@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create a ShipTrack customer account.">
+  <title>ShipTrack — Create account</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js" defer></script>
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <a class="brand auth-brand" href="index.html"><span class="logo">↗</span> ShipTrack</a>
+    <p class="eyebrow">CUSTOMER PORTAL</p>
+    <h1>Create your account</h1>
+    <p class="muted">Register to access your shipment tracking information.</p>
+
+    <form id="signupForm">
+      <label for="fullName">Full name</label>
+      <input id="fullName" name="fullName" type="text" autocomplete="name"
+             placeholder="Your full name" maxlength="100" required>
+
+      <label for="signupEmail">Email address</label>
+      <input id="signupEmail" name="email" type="email" autocomplete="email"
+             placeholder="you@example.com" required>
+
+      <label for="signupPassword">Password</label>
+      <input id="signupPassword" name="password" type="password"
+             autocomplete="new-password" minlength="8"
+             placeholder="At least 8 characters" required>
+
+      <label for="confirmPassword">Confirm password</label>
+      <input id="confirmPassword" name="confirmPassword" type="password"
+             autocomplete="new-password" minlength="8"
+             placeholder="Enter the password again" required>
+
+      <button class="btn primary full" type="submit" id="signupButton">Create account</button>
+      <p class="form-message" id="signupMessage" role="status" aria-live="polite"></p>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="index.html">Sign in</a></p>
+    <p class="fine-print">Use an email address you can access. You may need to confirm it before signing in.</p>
+  </main>
+</body>
+</html>

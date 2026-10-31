@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Track your ShipTrack shipment.">
+  <title>ShipTrack — Shipment Tracking</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script>
+    // Hide the page until Supabase confirms an authenticated session.
+    document.documentElement.style.visibility = "hidden";
+  </script>
+  <script src="tracking.js" defer></script>
+</head>
+<body>
+<header>
+  <div class="shell nav">
+    <a class="brand" href="tracking.html"><span class="logo">↗</span> ShipTrack</a>
+    <nav class="navlinks"><a href="#track">Track shipment</a><a href="#services">Services</a><a href="#how">How it works</a></nav>
+    <div class="navright">
+      <span class="account-email" id="accountEmail"></span>
+      <button class="btn logout-button" id="logoutButton" type="button">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="track">
+  <div class="shell hero-inner">
+    <div>
+      <div class="eyebrow">Shipping visibility, made simple</div>
+      <h1>Your shipment.<br>Every step. In view.</h1>
+      <p>Track your goods from dispatch to delivery with clear shipment updates, estimated arrival information, and one place for your tracking details.</p>
+      <form class="track-box" id="trackingForm">
+        <input id="trackingInput" aria-label="Tracking number" placeholder="Enter tracking number" autocomplete="off" required>
+        <button class="btn" type="submit">Track package →</button>
+      </form>
+      <div id="errorMessage" class="toast" role="alert"></div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="orbit"></div><div class="parcel"></div>
+      <div class="floating float-one">Shipment status<strong><span class="status-dot"></span>In transit</strong></div>
+      <div class="floating float-two">Delivery estimate<strong>Updates from your shipment</strong></div>
+    </div>
+  </div>
+</section>
+
+<main class="shell">
+  <div class="section-head">
+    <div><h2>Track your shipment</h2><p>Enter a tracking number assigned to your account.</p></div>
+  </div>
+
+  <section class="result" id="result" aria-live="polite" hidden>
+    <div class="result-top">
+      <div><div class="small-label">Tracking number</div><div class="tracking-id" id="resultId"></div></div>
+      <div class="pill" id="statusPill"></div>
+    </div>
+    <div class="result-body">
+      <div class="shipment-info">
+        <div class="small-label">Shipment route</div>
+        <div class="route">
+          <div><div class="small-label">From</div><div class="city" id="originCity"></div><div class="country" id="originCountry"></div></div>
+          <div class="route-line"></div>
+          <div class="right"><div class="small-label">To</div><div class="city" id="destCity"></div><div class="country" id="destCountry"></div></div>
+        </div>
+        <div class="details">
+          <div><div class="detail-label">Estimated delivery</div><div class="detail-value" id="eta"></div></div>
+          <div><div class="detail-label">Shipping service</div><div class="detail-value" id="service"></div></div>
+          <div><div class="detail-label">Package type</div><div class="detail-value" id="packageType"></div></div>
+          <div><div class="detail-label">Last updated</div><div class="detail-value" id="updated"></div></div>
+        </div>
+      </div>
+      <div class="timeline">
+        <h3>Shipment progress</h3>
+        <div id="timelineSteps"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="empty-state" id="emptyState">
+    <strong>Your shipment details will appear here.</strong>
+    <p>Enter the tracking number provided by the ShipTrack administrator.</p>
+  </div>
+
+  <div class="cards" id="services">
+    <article class="feature"><div class="feature-icon">📍</div><h3>End-to-end visibility</h3><p>Follow your parcel's journey with a shipment timeline and location updates.</p></article>
+    <article class="feature"><div class="feature-icon">🔔</div><h3>Clear status updates</h3><p>See whether a package is booked, dispatched, in transit, out for delivery, or delivered.</p></article>
+    <article class="feature"><div class="feature-icon">🛡️</div><h3>Your shipment details</h3><p>View tracking information associated with your signed-in account.</p></article>
+  </div>
+  <section class="cta" id="how"><div><h3>Shipping should feel straightforward.</h3><p>Enter your tracking number above to view the shipment journey.</p></div><a class="btn" href="#track">Track a shipment</a></section>
+</main>
+
+<footer><div class="shell footer-inner"><div class="footer-brand">↗ ShipTrack</div><div>Simple shipment tracking for goods on the move.</div><div>© 2026 ShipTrack.</div></div></footer>
+</body>
+</html>
