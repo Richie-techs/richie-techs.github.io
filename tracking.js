@@ -52,6 +52,9 @@ function setText(id, value) {
       value === null || value === undefined || value === "" ? "Not provided" : String(value);
 }
 
+function byId(id) {
+    return document.getElementById(id);
+}
   // DEMO TRACKING FUNCTION
 byId("demoLink").addEventListener("click", function () {
 
