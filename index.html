@@ -158,7 +158,7 @@ button:disabled {
 <div class="footer">
     <p>
         Don't have an account?
-        <a href="signup.html">Create Account</a>
+        <a href="Signup.html">Create Account</a>
     </p>
 </div>
 
@@ -182,7 +182,7 @@ async function checkSession() {
         await supabaseClient.auth.getSession();
 
     if (!error && data.session) {
-        window.location.replace("tracking.html");
+        window.location.replace("Login.html");
     }
 }
 
@@ -234,7 +234,7 @@ document.getElementById("loginForm")
             return;
         }
 
-        window.location.href = "tracking.html";
+        window.location.href = "Login.html";
 
     } catch (error) {
 
