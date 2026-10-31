@@ -60,10 +60,10 @@ byId("demoLink").addEventListener("click", function () {
 
     const demo = {
         tracking_number: "ST-2026-031",
-        origin_city: "Texas",
+        origin_city: "New York City",
         origin_country: "USA",
-        destination_city: "San Antonio",
-        destination_country: "USA",
+        destination_city: "London",
+        destination_country: "UK",
         status: "In transit",
         estimated_delivery: "November 5, 2026",
         shipping_service: "International Express",
@@ -87,7 +87,7 @@ byId("demoLink").addEventListener("click", function () {
             },
             {
                 title: "In Transit",
-                description: "Shipment is moving towards San Antonio,TX78239-3621,USA .",
+                description: "Shipment is moving towards London,UK.",
                 event_time: "October 31, 2026"
             }
         ]
