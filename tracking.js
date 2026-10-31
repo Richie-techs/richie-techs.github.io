@@ -48,10 +48,92 @@
       date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
   }
 
-  function setText(id, value) {
-    document.getElementById(id).textContent =
-      value === null || value === undefined || value === "" ? "Not provided" : String(value);
-  }
+  // DEMO TRACKING FUNCTION
+byId("demoLink").addEventListener("click", function () {
+
+    const demo = {
+        tracking_number: "ST-2026-031",
+        origin_city: "Texas",
+        origin_country: "USA",
+        destination_city: "San Antonio",
+        destination_country: "USA",
+        status: "In transit",
+        estimated_delivery: "November 5, 2026",
+        shipping_service: "International Express",
+        package_type: "Sample Parcel",
+        updated_at: "October 31, 2026",
+        timeline_events: [
+            {
+                title: "Shipment Registered",
+                description: "Your shipment has been registered.",
+                event_time: "October 28, 2026"
+            },
+            {
+                title: "Package Collected",
+                description: "Package collected in Accra.",
+                event_time: "October 29, 2026"
+            },
+            {
+                title: "Departed Origin Facility",
+                description: "Shipment departed Texas.",
+                event_time: "October 30, 2026"
+            },
+            {
+                title: "In Transit",
+                description: "Shipment is moving towards San Antonio,TX78239-3621,USA .",
+                event_time: "October 31, 2026"
+            }
+        ]
+    };
+
+    // Fill shipment information
+    byId("trackingInput").value = demo.tracking_number;
+
+    text("resultId", demo.tracking_number);
+    text("originCity", demo.origin_city);
+    text("originCountry", demo.origin_country);
+    text("destCity", demo.destination_city);
+    text("destCountry", demo.destination_country);
+    text("eta", demo.estimated_delivery);
+    text("service", demo.shipping_service);
+    text("packageType", demo.package_type);
+    text("updated", demo.updated_at);
+    text("statusPill", demo.status);
+
+    // Display shipment timeline
+    const timeline = byId("timelineSteps");
+    timeline.replaceChildren();
+
+    demo.timeline_events.forEach(event => {
+
+        const item = document.createElement("div");
+        item.className = "timeline-item";
+
+        const title = document.createElement("strong");
+        title.textContent = event.title;
+
+        const description = document.createElement("p");
+        description.textContent = event.description;
+
+        const date = document.createElement("small");
+        date.textContent = event.event_time;
+
+        item.append(title, description, date);
+        timeline.appendChild(item);
+    });
+
+    // Show tracking results
+    byId("result").hidden = false;
+    byId("emptyState").hidden = true;
+
+    byId("errorMessage").textContent =
+        "Demo mode: These are sample shipment details, not a real shipment.";
+
+    byId("result").scrollIntoView({
+        behavior: "smooth"
+    });
+
+});
 
   function showShipment(row) {
     setText("resultId", row.tracking_number);
