@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ShipTrack | Admin Dashboard</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f3f6fa;
+      color: #1e293b;
+    }
+
+    .admin-container {
+      max-width: 850px;
+      margin: 30px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      color: #123b66;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 30px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      margin-bottom: 7px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 130px;
+      font-family: monospace;
+      resize: vertical;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    button {
+      padding: 13px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .save-btn {
+      background: #123b66;
+      color: white;
+    }
+
+    .search-btn {
+      background: #0f766e;
+      color: white;
+    }
+
+    .reset-btn {
+      background: #64748b;
+      color: white;
+    }
+
+    button:hover {
+      opacity: 0.88;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 25px;
+      text-align: center;
+      color: #123b66;
+      text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .admin-container {
+        padding: 20px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full-width {
+        grid-column: auto;
+      }
+
+      .button-group button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="admin-container">
+
+    <h1>ShipTrack Admin Dashboard</h1>
+
+    <p class="subtitle">
+      Create, search and manage shipment tracking records.
+    </p>
+
+    <form id="shipmentForm">
+
+      <div class="form-grid">
+
+        <div class="form-group full-width">
+          <label for="user_id">Customer Supabase User ID</label>
+          <input
+            type="text"
+            id="user_id"
+            placeholder="Enter customer's Supabase UUID"
+            required
+          >
+        </div>
+
+        <div class="form-group full-width">
+          <label for="tracking_number">Tracking Number</label>
+          <input
+            type="text"
+            id="tracking_number"
+            value="ST-2026-045"
+            placeholder="ST-2026-045"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="origin_city">Origin City</label>
+          <input
+            type="text"
+            id="origin_city"
+            placeholder="e.g. Accra"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="origin_country">Origin Country</label>
+          <input
+            type="text"
+            id="origin_country"
+            placeholder="e.g. Ghana"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="destination_city">Destination City</label>
+          <input
+            type="text"
+            id="destination_city"
+            placeholder="e.g. London"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="destination_country">Destination Country</label>
+          <input
+            type="text"
+            id="destination_country"
+            placeholder="e.g. United Kingdom"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="status">Shipment Status</label>
+          <select id="status" required>
+            <option value="Processing">Processing</option>
+            <option value="Picked Up">Picked Up</option>
+            <option value="In Transit">In Transit</option>
+            <option value="Arrived at Facility">Arrived at Facility</option>
+            <option value="Out for Delivery">Out for Delivery</option>
+            <option value="Delivered">Delivered</option>
+            <option value="On Hold">On Hold</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="estimated_delivery">Estimated Delivery</label>
+          <input
+            type="date"
+            id="estimated_delivery"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="shipping_service">Shipping Service</label>
+          <input
+            type="text"
+            id="shipping_service"
+            placeholder="e.g. Express Shipping"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="package_type">Package Type</label>
+          <input
+            type="text"
+            id="package_type"
+            placeholder="e.g. Electronics"
+          >
+        </div>
+
+        <div class="form-group full-width">
+          <label for="timeline_events">
+            Shipment Timeline (JSON format)
+          </label>
+
+          <textarea
+            id="timeline_events"
+            placeholder='[{"status":"Processing","location":"Accra, Ghana","description":"Shipment received","timestamp":"2026-10-31T10:00:00Z"}]'
+          ></textarea>
+        </div>
+
+      </div>
+
+      <div class="button-group">
+
+        <button
+          type="submit"
+          class="save-btn"
+        >
+          Save Shipment
+        </button>
+
+        <button
+          type="button"
+          id="searchShipment"
+          class="search-btn"
+        >
+          Search Shipment
+        </button>
+
+        <button
+          type="button"
+          id="resetForm"
+          class="reset-btn"
+        >
+          Clear Form
+        </button>
+
+      </div>
+
+    </form>
+
+    <p id="message"></p>
+
+    <a href="tracking.html" class="back-link">
+      ← Back to Tracking Page
+    </a>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+
+</body>
+</html>
