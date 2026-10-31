@@ -77,7 +77,7 @@ byId("demoLink").addEventListener("click", function () {
             },
             {
                 title: "Package Collected",
-                description: "Package collected in Accra.",
+                description: "Package collected in New York City.",
                 event_time: "October 29, 2026"
             },
             {
