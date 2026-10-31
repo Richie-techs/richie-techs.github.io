@@ -47,6 +47,10 @@
     return Number.isNaN(date.getTime()) ? String(value) :
       date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
   }
+function setText(id, value) {
+    document.getElementById(id).textContent =
+      value === null || value === undefined || value === "" ? "Not provided" : String(value);
+}
 
   // DEMO TRACKING FUNCTION
 byId("demoLink").addEventListener("click", function () {
