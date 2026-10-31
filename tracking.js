@@ -93,16 +93,16 @@ byId("demoLink").addEventListener("click", function () {
     // Fill shipment information
     byId("trackingInput").value = demo.tracking_number;
 
-    text("resultId", demo.tracking_number);
-    text("originCity", demo.origin_city);
-    text("originCountry", demo.origin_country);
-    text("destCity", demo.destination_city);
-    text("destCountry", demo.destination_country);
-    text("eta", demo.estimated_delivery);
-    text("service", demo.shipping_service);
-    text("packageType", demo.package_type);
-    text("updated", demo.updated_at);
-    text("statusPill", demo.status);
+    setText("resultId", demo.tracking_number);
+    setText("originCity", demo.origin_city);
+    setText("originCountry", demo.origin_country);
+    setText("destCity", demo.destination_city);
+    setText("destCountry", demo.destination_country);
+    setText("eta", demo.estimated_delivery);
+    setText("service", demo.shipping_service);
+    setText("packageType", demo.package_type);
+    setText("updated", demo.updated_at);
+    setText("statusPill", demo.status);
 
     // Display shipment timeline
     const timeline = byId("timelineSteps");
