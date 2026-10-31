@@ -32,11 +32,23 @@
       <div class="eyebrow">Shipping visibility, made simple</div>
       <h1>Your shipment.<br>Every step. In view.</h1>
       <p>Track your goods from dispatch to delivery with clear shipment updates, estimated arrival information, and one place for your tracking details.</p>
-      <form class="track-box" id="trackingForm">
-        <input id="trackingInput" aria-label="Tracking number" placeholder="Enter tracking number" autocomplete="off" required>
-        <button class="btn" type="submit">Track package →</button>
-      </form>
-      <div id="errorMessage" class="toast" role="alert"></div>
+     <form class="track-box" id="trackingForm">
+  <input id="trackingInput"
+         aria-label="Tracking number"
+         placeholder="Enter tracking number"
+         autocomplete="off" required>
+
+  <button class="btn" type="submit">
+    Track package →
+  </button>
+</form>
+
+<button class="btn secondary" id="demoLink" type="button"
+        style="margin-top: 12px;">
+  Try Demo Tracking
+</button>
+
+<div id="errorMessage" class="toast" role="alert"></div> 
     </div>
     <div class="hero-art" aria-hidden="true">
       <div class="orbit"></div><div class="parcel"></div>
