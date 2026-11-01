@@ -1,4 +1,7 @@
 
+
+ 
+
 (() => {
     "use strict";
 
@@ -28,7 +31,6 @@
         return String(value);
     }
 
-
     function setText(id, value) {
         const element = $(id);
 
@@ -36,7 +38,6 @@
             element.textContent = clean(value);
         }
     }
-
 
     function formatDate(value) {
         if (!value) {
@@ -55,15 +56,17 @@
         });
     }
 
-
     function showMessage(message, isError = false) {
-        $("errorMessage").textContent = message;
+        const element = $("errorMessage");
 
-        $("errorMessage").style.color = isError
+        if (!element) return;
+
+        element.textContent = message;
+
+        element.style.color = isError
             ? "#ffd0cc"
             : "#c8d3e7";
     }
-
 
     function normalizeStatus(status) {
         return String(status || "")
@@ -79,6 +82,8 @@
     function renderTimeline(events) {
 
         const timeline = $("timelineSteps");
+
+        if (!timeline) return;
 
         timeline.replaceChildren();
 
@@ -96,7 +101,6 @@
             return;
         }
 
-
         const sortedEvents = [...events].sort((a, b) => {
 
             return new Date(
@@ -107,13 +111,11 @@
 
         });
 
-
         sortedEvents.forEach(event => {
 
             const item = document.createElement("div");
 
             item.className = "timeline-item";
-
 
             const title = document.createElement("strong");
 
@@ -122,12 +124,10 @@
                 event.status ||
                 "Shipment Update";
 
-
             const description = document.createElement("p");
 
             description.textContent =
                 event.description || "";
-
 
             const time = document.createElement("time");
 
@@ -135,11 +135,8 @@
                 event.event_time || event.timestamp
             );
 
-
             item.appendChild(title);
-
             item.appendChild(description);
-
             item.appendChild(time);
 
             timeline.appendChild(item);
@@ -157,39 +154,57 @@
 
         if (!row) return;
 
-
         // Tracking number
 
         setText("resultId", row.tracking_number);
 
 
-        // Shipment route
+        // ======================================
+        // SENDER INFORMATION
+        // ======================================
 
-        // Sender and receiver information
+        setText(
+            "senderName",
+            row.shipper_name
+        );
 
-setText(
-    "senderName",
-    row.sender_name || row.shipper_name
-);
-
-setText(
-    "receiverName",
-    row.receiver_name
-);
-
-
-// Shipment route
-
-setText("originCity", row.origin_city);
-
-setText("originCountry", row.origin_country);
-
-setText("destCity", row.destination_city);
-
-setText("destCountry", row.destination_country);
+        setText(
+            "senderAddress",
+            row.shipper_address
+        );
 
 
-        // Shipment details
+        // ======================================
+        // RECEIVER INFORMATION
+        // ======================================
+
+        setText(
+            "receiverName",
+            row.receiver_name
+        );
+
+        setText(
+            "receiverAddress",
+            row.receiver_address
+        );
+
+
+        // ======================================
+        // SHIPMENT ROUTE
+        // ======================================
+
+        setText("originCity", row.origin_city);
+
+        setText("originCountry", row.origin_country);
+
+        setText("destCity", row.destination_city);
+
+        setText("destCountry", row.destination_country);
+
+
+        // ======================================
+        // SHIPMENT DETAILS
+        // ======================================
 
         setText(
             "shipType",
@@ -220,45 +235,61 @@ setText("destCountry", row.destination_country);
         setText("packageType", row.package_type);
 
 
-        // Shipment status
+        // ======================================
+        // SHIPMENT STATUS
+        // ======================================
 
         const status = $("statusPill");
 
-        status.textContent =
-            row.status || "Status unavailable";
+        if (status) {
 
-        status.className =
-            "status " + normalizeStatus(row.status);
+            status.textContent =
+                row.status || "Status unavailable";
+
+            status.className =
+                "status " + normalizeStatus(row.status);
+
+        }
 
 
-        // Tracking history
+        // ======================================
+        // TRACKING HISTORY
+        // ======================================
 
         renderTimeline(row.timeline_events);
 
 
-        // Shipment hold notification
+        // ======================================
+        // SHIPMENT HOLD NOTIFICATION
+        // ======================================
 
         const isOnHold =
             String(row.status || "").toLowerCase() === "on hold"
             || Boolean(row.hold_reason);
 
+        if ($("holdNotice")) {
 
-        $("holdNotice").classList.toggle(
-            "hidden",
-            !isOnHold
+            $("holdNotice").classList.toggle(
+                "hidden",
+                !isOnHold
+            );
+
+        }
+
+        setText(
+            "holdReason",
+            row.hold_reason ||
+            "Your shipment is currently on hold. Contact the shipping administrator for further information."
         );
 
 
-        $("holdReason").textContent =
-            row.hold_reason ||
-            "Your shipment is currently on hold. Contact the shipping administrator for further information.";
+        // ======================================
+        // SHOW RESULTS
+        // ======================================
 
+        $("result")?.classList.remove("hidden");
 
-        // Show result
-
-        $("result").classList.remove("hidden");
-
-        $("emptyState").classList.add("hidden");
+        $("emptyState")?.classList.add("hidden");
 
     }
 
@@ -277,7 +308,6 @@ setText("destCountry", row.destination_country);
 
         }
 
-
         realtimeChannel = db
 
             .channel("shiptrack-" + shipmentId)
@@ -292,9 +322,6 @@ setText("destCountry", row.destination_country);
                 },
 
                 payload => {
-
-                    // Verify that the updated record
-                    // still belongs to the signed-in user.
 
                     if (
                         payload.new &&
@@ -329,11 +356,9 @@ setText("destCountry", row.destination_country);
             return;
         }
 
-
         showMessage("Searching for your shipment...");
 
         $("trackButton").disabled = true;
-
 
         try {
 
@@ -345,16 +370,24 @@ setText("destCountry", row.destination_country);
                     id,
                     user_id,
                     tracking_number,
+
+                    shipper_name,
+                    shipper_address,
+                    receiver_name,
+                    receiver_address,
+
                     origin_city,
                     origin_country,
                     destination_city,
                     destination_country,
+
                     status,
                     estimated_delivery,
                     shipping_service,
                     package_type,
                     updated_at,
                     timeline_events,
+
                     ship_type,
                     weight,
                     invoice_no,
@@ -397,14 +430,19 @@ setText("destCountry", row.destination_country);
             }
 
 
+            // Display shipment information
+
             renderShipment(data);
 
             showMessage("Shipment found successfully.");
 
+
+            // Subscribe to realtime updates
+
             await subscribeToShipment(data.id);
 
 
-            // Update browser URL without reloading.
+            // Update browser URL without reloading
 
             const newUrl = new URL(window.location.href);
 
@@ -440,7 +478,7 @@ setText("destCountry", row.destination_country);
 
     async function initializeTracking() {
 
-        // Check configuration.
+        // Check Supabase configuration
 
         if (
             !window.supabase ||
@@ -459,12 +497,12 @@ setText("destCountry", row.destination_country);
         }
 
 
-        // Create Supabase client.
+        // Create Supabase client
 
         db = window.supabase.createClient(url, key);
 
 
-        // Verify login.
+        // Verify login
 
         const {
             data,
@@ -487,7 +525,7 @@ setText("destCountry", row.destination_country);
             currentUser.email || "Signed in";
 
 
-        // Check administrator role.
+        // Check administrator role
 
         const {
             data: profile,
@@ -510,7 +548,7 @@ setText("destCountry", row.destination_country);
         }
 
 
-        // Sign out.
+        // Sign out
 
         $("logoutButton").addEventListener(
             "click",
@@ -535,7 +573,7 @@ setText("destCountry", row.destination_country);
         );
 
 
-        // Tracking form.
+        // Tracking form
 
         $("trackingForm").addEventListener(
             "submit",
@@ -552,7 +590,7 @@ setText("destCountry", row.destination_country);
         );
 
 
-        // Support direct tracking links.
+        // Support direct tracking links
 
         const params = new URLSearchParams(
             window.location.search
@@ -580,8 +618,4 @@ setText("destCountry", row.destination_country);
         initializeTracking
     );
 
-
 })();
-
-   
-   
