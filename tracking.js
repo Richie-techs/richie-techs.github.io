@@ -165,13 +165,28 @@
 
         // Shipment route
 
-        setText("originCity", row.origin_city);
+        // Sender and receiver information
 
-        setText("originCountry", row.origin_country);
+setText(
+    "senderName",
+    row.sender_name || row.shipper_name
+);
 
-        setText("destCity", row.destination_city);
+setText(
+    "receiverName",
+    row.receiver_name
+);
 
-        setText("destCountry", row.destination_country);
+
+// Shipment route
+
+setText("originCity", row.origin_city);
+
+setText("originCountry", row.origin_country);
+
+setText("destCity", row.destination_city);
+
+setText("destCountry", row.destination_country);
 
 
         // Shipment details
