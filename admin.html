@@ -1,318 +1,882 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>ShipTrack | Admin Dashboard</title>
+    <meta charset="UTF-8">
 
-  <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+    <title>ShipTrack | Admin Dashboard</title>
 
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #f3f6fa;
-      color: #1e293b;
-    }
+    <link rel="stylesheet" href="portal.css">
 
-    .admin-container {
-      max-width: 850px;
-      margin: 30px auto;
-      padding: 30px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-    }
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    h1 {
-      text-align: center;
-      color: #123b66;
-    }
+    <!-- Existing configuration -->
+    <script src="config.js"></script>
 
-    .subtitle {
-      text-align: center;
-      color: #64748b;
-      margin-bottom: 30px;
-    }
+    <script src="admin.js" defer></script>
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .full-width {
-      grid-column: 1 / -1;
-    }
-
-    label {
-      margin-bottom: 7px;
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    textarea {
-      min-height: 130px;
-      font-family: monospace;
-      resize: vertical;
-    }
-
-    .button-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 25px;
-    }
-
-    button {
-      padding: 13px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .save-btn {
-      background: #123b66;
-      color: white;
-    }
-
-    .search-btn {
-      background: #0f766e;
-      color: white;
-    }
-
-    .reset-btn {
-      background: #64748b;
-      color: white;
-    }
-
-    button:hover {
-      opacity: 0.88;
-    }
-
-    #message {
-      margin-top: 20px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .back-link {
-      display: block;
-      margin-top: 25px;
-      text-align: center;
-      color: #123b66;
-      text-decoration: none;
-    }
-
-    @media (max-width: 600px) {
-      .admin-container {
-        padding: 20px;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .full-width {
-        grid-column: auto;
-      }
-
-      .button-group button {
-        width: 100%;
-      }
-    }
-  </style>
 </head>
+
 
 <body>
 
-  <div class="admin-container">
 
-    <h1>ShipTrack Admin Dashboard</h1>
+    <!-- HEADER -->
 
-    <p class="subtitle">
-      Create, search and manage shipment tracking records.
-    </p>
+    <header class="topbar">
 
-    <form id="shipmentForm">
+        <div class="app-shell topbar-inner">
 
-      <div class="form-grid">
+            <a class="brand" href="admin.html">
 
-        <div class="form-group full-width">
-          <label for="user_id">Customer Supabase User ID</label>
-          <input
-            type="text"
-            id="user_id"
-            placeholder="Enter customer's Supabase UUID"
-            required
-          >
+                <span class="brand-mark">↗</span>
+
+                ShipTrack
+
+                <span
+                    class="muted"
+                    style="font-size:12px;font-weight:650">
+
+                    ADMIN
+
+                </span>
+
+            </a>
+
+
+            <div class="top-actions">
+
+                <span
+                    class="user-email"
+                    id="adminEmail">
+                </span>
+
+
+                <a
+                    class="btn btn-light btn-small"
+                    href="tracking.html">
+
+                    Customer View
+
+                </a>
+
+
+                <button
+                    class="btn btn-small"
+                    id="logoutButton"
+                    type="button">
+
+                    Sign Out
+
+                </button>
+
+            </div>
+
         </div>
 
-        <div class="form-group full-width">
-          <label for="tracking_number">Tracking Number</label>
-          <input
-            type="text"
-            id="tracking_number"
-            value="ST-2026-045"
-            placeholder="ST-2026-045"
-            required
-          >
+    </header>
+
+
+
+    <!-- MAIN DASHBOARD -->
+
+    <main class="app-shell page">
+
+
+        <!-- PAGE HEADING -->
+
+        <div class="page-heading">
+
+            <div>
+
+                <div class="eyebrow">
+                    CONTROL CENTRE
+                </div>
+
+                <h1>
+                    Shipment Management
+                </h1>
+
+                <p>
+                    Create shipments, manage customer assignments
+                    and publish tracking updates.
+                </p>
+
+            </div>
+
+
+            <button
+                class="btn"
+                id="newShipmentButton"
+                type="button">
+
+                + New Shipment
+
+            </button>
+
         </div>
 
-        <div class="form-group">
-          <label for="origin_city">Origin City</label>
-          <input
-            type="text"
-            id="origin_city"
-            placeholder="e.g. Accra"
-            required
-          >
+
+
+        <!-- STATISTICS -->
+
+        <section class="stats">
+
+
+            <div class="panel stat">
+
+                <span class="stat-icon">▤</span>
+
+                <div class="stat-label">
+                    Total Shipments
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalCount">
+
+                    —
+
+                </div>
+
+            </div>
+
+
+
+            <div class="panel stat">
+
+                <span class="stat-icon">↗</span>
+
+                <div class="stat-label">
+                    In Transit
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="transitCount">
+
+                    —
+
+                </div>
+
+            </div>
+
+
+
+            <div class="panel stat">
+
+                <span class="stat-icon">✓</span>
+
+                <div class="stat-label">
+                    Delivered
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="deliveredCount">
+
+                    —
+
+                </div>
+
+            </div>
+
+
+
+            <div class="panel stat">
+
+                <span class="stat-icon">!</span>
+
+                <div class="stat-label">
+                    On Hold
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="holdCount">
+
+                    —
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- DASHBOARD CONTENT -->
+
+        <div class="grid-main">
+
+
+
+            <!-- CREATE / EDIT SHIPMENT -->
+
+            <section
+                class="panel panel-pad"
+                id="editorPanel">
+
+
+                <h2
+                    class="panel-title"
+                    id="formTitle">
+
+                    Create a Shipment
+
+                </h2>
+
+
+                <p class="panel-subtitle">
+
+                    Fields marked * are required.
+                    Saving a shipment update adds a timestamped
+                    event to its history.
+
+                </p>
+
+
+
+                <form id="shipmentForm">
+
+
+                    <div class="form-grid">
+
+
+                        <!-- CUSTOMER -->
+
+                        <div class="field full">
+
+                            <label for="customerId">
+
+                                Assign to Customer *
+
+                            </label>
+
+
+                            <select
+                                id="customerId"
+                                required>
+
+                                <option value="">
+
+                                    Loading customers...
+
+                                </option>
+
+                            </select>
+
+
+                            <span class="field-hint">
+
+                                Customer accounts are loaded
+                                from your profiles table.
+
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- TRACKING NUMBER -->
+
+                        <div class="field">
+
+                            <label for="trackingNumber">
+
+                                Tracking Number *
+
+                            </label>
+
+                            <input
+                                id="trackingNumber"
+                                type="text"
+                                placeholder="ST-2026-046"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- STATUS -->
+
+                        <div class="field">
+
+                            <label for="status">
+
+                                Shipment Status *
+
+                            </label>
+
+
+                            <select id="status" required>
+
+                                <option>Shipment Registered</option>
+
+                                <option>Processing</option>
+
+                                <option>Picked Up</option>
+
+                                <option>In Transit</option>
+
+                                <option>Arrived at Facility</option>
+
+                                <option>Out for Delivery</option>
+
+                                <option>Delivered</option>
+
+                                <option>On Hold</option>
+
+                                <option>Cancelled</option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- SHIPPER -->
+
+                        <div class="field">
+
+                            <label for="shipperName">
+                                Shipper Name
+                            </label>
+
+                            <input
+                                id="shipperName"
+                                type="text">
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="shipperAddress">
+                                Shipper Address
+                            </label>
+
+                            <input
+                                id="shipperAddress"
+                                type="text">
+
+                        </div>
+
+
+
+                        <!-- RECEIVER -->
+
+                        <div class="field">
+
+                            <label for="receiverName">
+                                Receiver Name
+                            </label>
+
+                            <input
+                                id="receiverName"
+                                type="text">
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="receiverAddress">
+                                Receiver Address
+                            </label>
+
+                            <input
+                                id="receiverAddress"
+                                type="text">
+
+                        </div>
+
+
+
+                        <!-- ORIGIN -->
+
+                        <div class="field">
+
+                            <label for="originCity">
+                                Origin City *
+                            </label>
+
+                            <input
+                                id="originCity"
+                                type="text"
+                                placeholder="Accra"
+                                required>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="originCountry">
+                                Origin Country *
+                            </label>
+
+                            <input
+                                id="originCountry"
+                                type="text"
+                                placeholder="Ghana"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- DESTINATION -->
+
+                        <div class="field">
+
+                            <label for="destinationCity">
+                                Destination City *
+                            </label>
+
+                            <input
+                                id="destinationCity"
+                                type="text"
+                                placeholder="London"
+                                required>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="destinationCountry">
+                                Destination Country *
+                            </label>
+
+                            <input
+                                id="destinationCountry"
+                                type="text"
+                                placeholder="United Kingdom"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- SHIPMENT TYPE -->
+
+                        <div class="field">
+
+                            <label for="shipType">
+                                Ship Type
+                            </label>
+
+                            <input
+                                id="shipType"
+                                type="text"
+                                placeholder="Electronics">
+
+                        </div>
+
+
+
+                        <!-- WEIGHT -->
+
+                        <div class="field">
+
+                            <label for="weight">
+                                Weight (kg)
+                            </label>
+
+                            <input
+                                id="weight"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="12.5">
+
+                        </div>
+
+
+
+                        <!-- INVOICE -->
+
+                        <div class="field">
+
+                            <label for="invoiceNo">
+                                Invoice Number
+                            </label>
+
+                            <input
+                                id="invoiceNo"
+                                type="text">
+
+                        </div>
+
+
+
+                        <!-- BOOKING -->
+
+                        <div class="field">
+
+                            <label for="bookingMode">
+                                Booking Mode
+                            </label>
+
+
+                            <select id="bookingMode">
+
+                                <option value="">
+                                    Select booking mode
+                                </option>
+
+                                <option>Paid</option>
+
+                                <option>Cash on delivery</option>
+
+                                <option>Account</option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- TRANSPORT -->
+
+                        <div class="field">
+
+                            <label for="transportMode">
+                                Transport Mode
+                            </label>
+
+
+                            <select id="transportMode">
+
+                                <option value="">
+                                    Select mode
+                                </option>
+
+                                <option>Air</option>
+
+                                <option>Sea</option>
+
+                                <option>Road</option>
+
+                                <option>Rail</option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- CURRENT LOCATION -->
+
+                        <div class="field">
+
+                            <label for="currentLocation">
+                                Current Location
+                            </label>
+
+                            <input
+                                id="currentLocation"
+                                type="text"
+                                placeholder="JFK Airport, New York">
+
+                        </div>
+
+
+
+                        <!-- DELIVERY DATE -->
+
+                        <div class="field">
+
+                            <label for="estimatedDelivery">
+                                Estimated Delivery
+                            </label>
+
+                            <input
+                                id="estimatedDelivery"
+                                type="date">
+
+                        </div>
+
+
+
+                        <!-- SERVICE -->
+
+                        <div class="field">
+
+                            <label for="shippingService">
+                                Shipping Service
+                            </label>
+
+                            <input
+                                id="shippingService"
+                                type="text"
+                                placeholder="International Express">
+
+                        </div>
+
+
+
+                        <!-- PACKAGE TYPE -->
+
+                        <div class="field">
+
+                            <label for="packageType">
+                                Package Type
+                            </label>
+
+                            <input
+                                id="packageType"
+                                type="text"
+                                placeholder="Parcel">
+
+                        </div>
+
+
+
+                        <!-- HOLD REASON -->
+
+                        <div class="field full">
+
+                            <label for="holdReason">
+                                Hold / Exception Reason
+                            </label>
+
+                            <textarea
+                                id="holdReason"
+                                placeholder="Explain why the shipment is on hold, if applicable.">
+                            </textarea>
+
+                        </div>
+
+
+
+                        <!-- TRACKING EVENT -->
+
+                        <div class="field full">
+
+                            <label for="eventTitle">
+
+                                Tracking Update Title
+
+                            </label>
+
+                            <input
+                                id="eventTitle"
+                                type="text"
+                                placeholder="Package received at sorting facility">
+
+                        </div>
+
+
+
+                        <div class="field full">
+
+                            <label for="eventDescription">
+
+                                Tracking Update Description
+
+                            </label>
+
+                            <textarea
+                                id="eventDescription"
+                                placeholder="Describe what happened and any next steps.">
+                            </textarea>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- FORM BUTTONS -->
+
+                    <div class="form-actions">
+
+
+                        <button
+                            class="btn"
+                            id="saveButton"
+                            type="submit">
+
+                            Save Shipment
+
+                        </button>
+
+
+                        <button
+                            class="btn btn-light"
+                            id="resetButton"
+                            type="button">
+
+                            Clear Form
+
+                        </button>
+
+
+                    </div>
+
+
+
+                    <p
+                        class="message"
+                        id="formMessage"
+                        role="status">
+                    </p>
+
+
+                </form>
+
+            </section>
+
+
+
+
+            <!-- SHIPMENT RECORDS -->
+
+            <section class="panel panel-pad">
+
+
+                <div class="toolbar">
+
+                    <div>
+
+                        <h2 class="panel-title">
+                            Shipment Records
+                        </h2>
+
+                        <p
+                            class="panel-subtitle"
+                            style="margin-bottom:0">
+
+                            Select a record to edit its details.
+
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="btn btn-light btn-small"
+                        id="refreshButton"
+                        type="button">
+
+                        Refresh
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- SEARCH -->
+
+                <input
+                    class="search-input"
+                    id="shipmentSearch"
+                    type="search"
+                    placeholder="Search tracking number, destination or status..."
+                    aria-label="Search shipments">
+
+
+
+                <!-- TABLE -->
+
+                <div
+                    class="table-wrap"
+                    style="margin-top:14px">
+
+
+                    <table class="data-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Tracking</th>
+
+                                <th>Destination</th>
+
+                                <th>Status</th>
+
+                                <th>Actions</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="shipmentRows">
+
+                            <tr>
+
+                                <td
+                                    colspan="4"
+                                    class="empty">
+
+                                    Loading shipments...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+
+                    </table>
+
+                </div>
+
+
+
+                <p
+                    class="message"
+                    id="listMessage">
+                </p>
+
+
+            </section>
+
+
         </div>
 
-        <div class="form-group">
-          <label for="origin_country">Origin Country</label>
-          <input
-            type="text"
-            id="origin_country"
-            placeholder="e.g. Ghana"
-            required
-          >
+    </main>
+
+
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+
+        <div class="app-shell footer-inner">
+
+            <strong>
+                ShipTrack Admin
+            </strong>
+
+            <span>
+                Administrator actions are protected by Supabase RLS.
+            </span>
+
+            <span>
+                © 2026 ShipTrack
+            </span>
+
         </div>
 
-        <div class="form-group">
-          <label for="destination_city">Destination City</label>
-          <input
-            type="text"
-            id="destination_city"
-            placeholder="e.g. London"
-            required
-          >
-        </div>
+    </footer>
 
-        <div class="form-group">
-          <label for="destination_country">Destination Country</label>
-          <input
-            type="text"
-            id="destination_country"
-            placeholder="e.g. United Kingdom"
-            required
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="status">Shipment Status</label>
-          <select id="status" required>
-            <option value="Processing">Processing</option>
-            <option value="Picked Up">Picked Up</option>
-            <option value="In Transit">In Transit</option>
-            <option value="Arrived at Facility">Arrived at Facility</option>
-            <option value="Out for Delivery">Out for Delivery</option>
-            <option value="Delivered">Delivered</option>
-            <option value="On Hold">On Hold</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="estimated_delivery">Estimated Delivery</label>
-          <input
-            type="date"
-            id="estimated_delivery"
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="shipping_service">Shipping Service</label>
-          <input
-            type="text"
-            id="shipping_service"
-            placeholder="e.g. Express Shipping"
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="package_type">Package Type</label>
-          <input
-            type="text"
-            id="package_type"
-            placeholder="e.g. Electronics"
-          >
-        </div>
-
-        <div class="form-group full-width">
-          <label for="timeline_events">
-            Shipment Timeline (JSON format)
-          </label>
-
-          <textarea
-            id="timeline_events"
-            placeholder='[{"status":"Processing","location":"Accra, Ghana","description":"Shipment received","timestamp":"2026-10-31T10:00:00Z"}]'
-          ></textarea>
-        </div>
-
-      </div>
-
-      <div class="button-group">
-
-        <button
-          type="submit"
-          class="save-btn"
-        >
-          Save Shipment
-        </button>
-
-        <button
-          type="button"
-          id="searchShipment"
-          class="search-btn"
-        >
-          Search Shipment
-        </button>
-
-        <button
-          type="button"
-          id="resetForm"
-          class="reset-btn"
-        >
-          Clear Form
-        </button>
-
-      </div>
-
-    </form>
-
-    <p id="message"></p>
-
-    <a href="tracking.html" class="back-link">
-      ← Back to Tracking Page
-    </a>
-
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
-  <script src="admin.js"></script>
 
 </body>
 </html>
+ 
+      
+       
