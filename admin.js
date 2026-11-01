@@ -301,6 +301,9 @@
       shipperAddress: "shipper_address",
       receiverName: "receiver_name",
       receiverAddress: "receiver_address",
+senderName: 'sender_name',
+receiverName: 'receiver_name',
+
       originCity: "origin_city",
       originCountry: "origin_country",
       destinationCity: "destination_city",
