@@ -1,4 +1,5 @@
  
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,9 +15,10 @@
     <!-- Supabase library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Your existing Supabase configuration -->
+    <!-- Supabase configuration -->
     <script src="config.js"></script>
 
+    <!-- Tracking JavaScript -->
     <script src="tracking.js" defer></script>
 </head>
 
@@ -75,7 +77,6 @@
                     View the route, shipment details, latest location
                     and a timestamped progress history.
                 </p>
-
 
                 <!-- TRACKING SEARCH -->
                 <form class="track-form" id="trackingForm">
@@ -189,6 +190,21 @@
             </div>
 
 
+            <!-- SHIPMENT HOLD NOTICE -->
+            <div
+                id="holdNotice"
+                class="hidden"
+                style="padding:15px; margin:15px 0; border-radius:8px; background:#fee2e2; color:#991b1b;">
+
+                <strong>Shipment on hold</strong>
+
+                <p id="holdReason">
+                    Your shipment is currently on hold.
+                </p>
+
+            </div>
+
+
             <div class="result-grid">
 
 
@@ -200,6 +216,7 @@
                     </div>
 
 
+                    <!-- ROUTE -->
                     <div class="route">
 
                         <div>
@@ -252,22 +269,39 @@
                     <!-- INFORMATION GRID -->
                     <div class="detail-grid">
 
+                        <!-- SENDER -->
+                        <div>
+                            <div class="detail-label">
+                                SENDER'S NAME
+                            </div>
 
+                            <div
+                                class="detail-value"
+                                id="senderName">
+                                Not provided
+                            </div>
+                        </div>
+
+
+                        <!-- RECEIVER -->
+                        <div>
+                            <div class="detail-label">
+                                RECEIVER'S NAME
+                            </div>
+
+                            <div
+                                class="detail-value"
+                                id="receiverName">
+                                Not provided
+                            </div>
+                        </div>
+
+
+                        <!-- SHIP TYPE -->
                         <div>
                             <div class="detail-label">
                                 SHIP TYPE
                             </div>
-<!-- SENDER INFORMATION -->
-<div class="detail-item">
-    <span class="detail-label">Sender's Name</span>
-    <span class="detail-value" id="senderName">Not provided</span>
-</div>
-
-<!-- RECEIVER INFORMATION -->
-<div class="detail-item">
-    <span class="detail-label">Receiver's Name</span>
-    <span class="detail-value" id="receiverName">Not provided</span>
-</div>
 
                             <div
                                 class="detail-value"
@@ -277,6 +311,7 @@
                         </div>
 
 
+                        <!-- WEIGHT -->
                         <div>
                             <div class="detail-label">
                                 WEIGHT
@@ -290,6 +325,7 @@
                         </div>
 
 
+                        <!-- INVOICE NUMBER -->
                         <div>
                             <div class="detail-label">
                                 INVOICE NUMBER
@@ -303,6 +339,7 @@
                         </div>
 
 
+                        <!-- BOOKING MODE -->
                         <div>
                             <div class="detail-label">
                                 BOOKING MODE
@@ -316,6 +353,7 @@
                         </div>
 
 
+                        <!-- TRANSPORT MODE -->
                         <div>
                             <div class="detail-label">
                                 TRANSPORT MODE
@@ -329,6 +367,7 @@
                         </div>
 
 
+                        <!-- CURRENT LOCATION -->
                         <div>
                             <div class="detail-label">
                                 CURRENT LOCATION
@@ -342,6 +381,7 @@
                         </div>
 
 
+                        <!-- ESTIMATED DELIVERY -->
                         <div>
                             <div class="detail-label">
                                 ESTIMATED DELIVERY
@@ -355,6 +395,7 @@
                         </div>
 
 
+                        <!-- LAST UPDATED -->
                         <div>
                             <div class="detail-label">
                                 LAST UPDATED
@@ -368,6 +409,7 @@
                         </div>
 
 
+                        <!-- SHIPPING SERVICE -->
                         <div>
                             <div class="detail-label">
                                 SHIPPING SERVICE
@@ -381,6 +423,7 @@
                         </div>
 
 
+                        <!-- PACKAGE TYPE -->
                         <div>
                             <div class="detail-label">
                                 PACKAGE TYPE
@@ -435,5 +478,3 @@
 
 </body>
 </html>
-
- 
