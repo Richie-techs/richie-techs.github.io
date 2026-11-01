@@ -1,233 +1,572 @@
+
 (() => {
-  const url = window.SHIPTRACK_SUPABASE_URL;
-  const key = window.SHIPTRACK_SUPABASE_PUBLISHABLE_KEY;
+    "use strict";
 
-  if (!window.supabase || !url || !key ||
-      url.includes("PASTE_YOUR") || key.includes("PASTE_YOUR")) {
-    document.documentElement.style.visibility = "visible";
-    alert("Supabase is not configured. Update config.js first.");
-    location.replace("index.html");
-    return;
-  }
+    // ==========================================
+    // 1. SUPABASE CONFIGURATION
+    // ==========================================
 
-  const client = window.supabase.createClient(url, key);
+    const url = window.SHIPTRACK_SUPABASE_URL;
+    const key = window.SHIPTRACK_SUPABASE_PUBLISHABLE_KEY;
 
-  async function start() {
-    const { data, error } = await client.auth.getSession();
-    if (error || !data.session) {
-      location.replace("index.html");
-      return;
+    const $ = id => document.getElementById(id);
+
+    let db = null;
+    let currentUser = null;
+    let realtimeChannel = null;
+
+
+    // ==========================================
+    // 2. HELPER FUNCTIONS
+    // ==========================================
+
+    function clean(value) {
+        if (value === null || value === undefined || value === "") {
+            return "Not provided";
+        }
+
+        return String(value);
     }
 
-    document.getElementById("accountEmail").textContent = data.session.user.email || "";
-    document.documentElement.style.visibility = "visible";
-  }
 
-  document.getElementById("logoutButton").addEventListener("click", async () => {
-    const button = document.getElementById("logoutButton");
-    button.disabled = true;
-    const { error } = await client.auth.signOut();
-    if (error) {
-      alert("Could not sign out: " + error.message);
-      button.disabled = false;
-      return;
+    function setText(id, value) {
+        const element = $(id);
+
+        if (element) {
+            element.textContent = clean(value);
+        }
     }
-    location.replace("index.html");
-  });
 
-  const form = document.getElementById("trackingForm");
-  const input = document.getElementById("trackingInput");
-  const errorBox = document.getElementById("errorMessage");
-  const result = document.getElementById("result");
-  const emptyState = document.getElementById("emptyState");
 
-  function formatDate(value) {
-    if (!value) return "Not provided";
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? String(value) :
-      date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
-  }
-function setText(id, value) {
-    document.getElementById(id).textContent =
-      value === null || value === undefined || value === "" ? "Not provided" : String(value);
-}
+    function formatDate(value) {
+        if (!value) {
+            return "Not provided";
+        }
 
-function byId(id) {
-    return document.getElementById(id);
-}
-  // DEMO TRACKING FUNCTION
-byId("demoLink").addEventListener("click", function () {
+        const date = new Date(value);
 
-    const demo = {
-        tracking_number: "ST-2026-031",
-        origin_city: "New York City",
-        origin_country: "USA",
-        destination_city: "London",
-        destination_country: "UK",
-        status: "In transit",
-        estimated_delivery: "November 5, 2026",
-        shipping_service: "International Express",
-        package_type: "Sample Parcel",
-        updated_at: "October 31, 2026",
-        timeline_events: [
-            {
-                title: "Shipment Registered",
-                description: "Your shipment has been registered.",
-                event_time: "October 28, 2026"
-            },
-            {
-                title: "Package Collected",
-                description: "Package collected in New York City.",
-                event_time: "October 29, 2026"
-            },
-            {
-                title: "Departed Origin Facility",
-                description: "Shipment departed Texas.",
-                event_time: "October 30, 2026"
-            },
-            {
-                title: "In Transit",
-                description: "Shipment is moving towards London,UK.",
-                event_time: "October 31, 2026"
+        if (Number.isNaN(date.getTime())) {
+            return String(value);
+        }
+
+        return date.toLocaleString(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short"
+        });
+    }
+
+
+    function showMessage(message, isError = false) {
+        $("errorMessage").textContent = message;
+
+        $("errorMessage").style.color = isError
+            ? "#ffd0cc"
+            : "#c8d3e7";
+    }
+
+
+    function normalizeStatus(status) {
+        return String(status || "")
+            .toLowerCase()
+            .replaceAll(" ", "-");
+    }
+
+
+    // ==========================================
+    // 3. RENDER TRACKING TIMELINE
+    // ==========================================
+
+    function renderTimeline(events) {
+
+        const timeline = $("timelineSteps");
+
+        timeline.replaceChildren();
+
+        if (!Array.isArray(events) || events.length === 0) {
+
+            const empty = document.createElement("p");
+
+            empty.className = "muted";
+
+            empty.textContent =
+                "No progress updates have been recorded yet.";
+
+            timeline.appendChild(empty);
+
+            return;
+        }
+
+
+        const sortedEvents = [...events].sort((a, b) => {
+
+            return new Date(
+                b.event_time || b.timestamp || 0
+            ) - new Date(
+                a.event_time || a.timestamp || 0
+            );
+
+        });
+
+
+        sortedEvents.forEach(event => {
+
+            const item = document.createElement("div");
+
+            item.className = "timeline-item";
+
+
+            const title = document.createElement("strong");
+
+            title.textContent =
+                event.title ||
+                event.status ||
+                "Shipment Update";
+
+
+            const description = document.createElement("p");
+
+            description.textContent =
+                event.description || "";
+
+
+            const time = document.createElement("time");
+
+            time.textContent = formatDate(
+                event.event_time || event.timestamp
+            );
+
+
+            item.appendChild(title);
+
+            item.appendChild(description);
+
+            item.appendChild(time);
+
+            timeline.appendChild(item);
+
+        });
+
+    }
+
+
+    // ==========================================
+    // 4. DISPLAY SHIPMENT INFORMATION
+    // ==========================================
+
+    function renderShipment(row) {
+
+        if (!row) return;
+
+
+        // Tracking number
+
+        setText("resultId", row.tracking_number);
+
+
+        // Shipment route
+
+        setText("originCity", row.origin_city);
+
+        setText("originCountry", row.origin_country);
+
+        setText("destCity", row.destination_city);
+
+        setText("destCountry", row.destination_country);
+
+
+        // Shipment details
+
+        setText(
+            "shipType",
+            row.ship_type || row.package_type
+        );
+
+        setText(
+            "weight",
+            row.weight == null
+                ? "Not provided"
+                : `${row.weight} kg`
+        );
+
+        setText("invoiceNo", row.invoice_no);
+
+        setText("bookingMode", row.booking_mode);
+
+        setText("transportMode", row.transport_mode);
+
+        setText("currentLocation", row.current_location);
+
+        setText("eta", row.estimated_delivery);
+
+        setText("updated", formatDate(row.updated_at));
+
+        setText("service", row.shipping_service);
+
+        setText("packageType", row.package_type);
+
+
+        // Shipment status
+
+        const status = $("statusPill");
+
+        status.textContent =
+            row.status || "Status unavailable";
+
+        status.className =
+            "status " + normalizeStatus(row.status);
+
+
+        // Tracking history
+
+        renderTimeline(row.timeline_events);
+
+
+        // Shipment hold notification
+
+        const isOnHold =
+            String(row.status || "").toLowerCase() === "on hold"
+            || Boolean(row.hold_reason);
+
+
+        $("holdNotice").classList.toggle(
+            "hidden",
+            !isOnHold
+        );
+
+
+        $("holdReason").textContent =
+            row.hold_reason ||
+            "Your shipment is currently on hold. Contact the shipping administrator for further information.";
+
+
+        // Show result
+
+        $("result").classList.remove("hidden");
+
+        $("emptyState").classList.add("hidden");
+
+    }
+
+
+    // ==========================================
+    // 5. REALTIME SHIPMENT UPDATES
+    // ==========================================
+
+    async function subscribeToShipment(shipmentId) {
+
+        if (realtimeChannel) {
+
+            await db.removeChannel(realtimeChannel);
+
+            realtimeChannel = null;
+
+        }
+
+
+        realtimeChannel = db
+
+            .channel("shiptrack-" + shipmentId)
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "shipments",
+                    filter: `id=eq.${shipmentId}`
+                },
+
+                payload => {
+
+                    // Verify that the updated record
+                    // still belongs to the signed-in user.
+
+                    if (
+                        payload.new &&
+                        payload.new.user_id === currentUser.id
+                    ) {
+
+                        renderShipment(payload.new);
+
+                    }
+
+                }
+            )
+
+            .subscribe();
+
+    }
+
+
+    // ==========================================
+    // 6. SEARCH FOR SHIPMENT
+    // ==========================================
+
+    async function trackShipment(trackingNumber) {
+
+        if (!trackingNumber) {
+
+            showMessage(
+                "Please enter a tracking number.",
+                true
+            );
+
+            return;
+        }
+
+
+        showMessage("Searching for your shipment...");
+
+        $("trackButton").disabled = true;
+
+
+        try {
+
+            const { data, error } = await db
+
+                .from("shipments")
+
+                .select(`
+                    id,
+                    user_id,
+                    tracking_number,
+                    origin_city,
+                    origin_country,
+                    destination_city,
+                    destination_country,
+                    status,
+                    estimated_delivery,
+                    shipping_service,
+                    package_type,
+                    updated_at,
+                    timeline_events,
+                    ship_type,
+                    weight,
+                    invoice_no,
+                    booking_mode,
+                    transport_mode,
+                    current_location,
+                    hold_reason
+                `)
+
+                .eq(
+                    "tracking_number",
+                    trackingNumber.trim().toUpperCase()
+                )
+
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+
+                .maybeSingle();
+
+
+            if (error) {
+                throw error;
             }
-        ]
-    };
 
-    // Fill shipment information
-    byId("trackingInput").value = demo.tracking_number;
 
-    setText("resultId", demo.tracking_number);
-    setText("originCity", demo.origin_city);
-    setText("originCountry", demo.origin_country);
-    setText("destCity", demo.destination_city);
-    setText("destCountry", demo.destination_country);
-    setText("eta", demo.estimated_delivery);
-    setText("service", demo.shipping_service);
-    setText("packageType", demo.package_type);
-    setText("updated", demo.updated_at);
-    setText("statusPill", demo.status);
+            if (!data) {
 
-    // Display shipment timeline
-    const timeline = byId("timelineSteps");
-    timeline.replaceChildren();
+                $("result").classList.add("hidden");
 
-    demo.timeline_events.forEach(event => {
+                $("emptyState").classList.remove("hidden");
 
-        const item = document.createElement("div");
-        item.className = "timeline-item";
+                showMessage(
+                    "No shipment with that tracking number was found in your account.",
+                    true
+                );
 
-        const title = document.createElement("strong");
-        title.textContent = event.title;
+                return;
+            }
 
-        const description = document.createElement("p");
-        description.textContent = event.description;
 
-        const date = document.createElement("small");
-        date.textContent = event.event_time;
+            renderShipment(data);
 
-        item.append(title, description, date);
-        timeline.appendChild(item);
-    });
+            showMessage("Shipment found successfully.");
 
-    // Show tracking results
-    byId("result").hidden = false;
-    byId("emptyState").hidden = true;
+            await subscribeToShipment(data.id);
 
-    byId("errorMessage").textContent =
-        "Demo mode: These are sample shipment details, not a real shipment.";
 
-    byId("result").scrollIntoView({
-        behavior: "smooth"
-    });
+            // Update browser URL without reloading.
 
-});
+            const newUrl = new URL(window.location.href);
 
-  function showShipment(row) {
-    setText("resultId", row.tracking_number);
-    setText("originCity", row.origin_city);
-    setText("originCountry", row.origin_country);
-    setText("destCity", row.destination_city);
-    setText("destCountry", row.destination_country);
-    setText("eta", row.estimated_delivery);
-    setText("service", row.shipping_service);
-    setText("packageType", row.package_type);
-    setText("updated", formatDate(row.updated_at));
+            newUrl.searchParams.set(
+                "tracking",
+                data.tracking_number
+            );
 
-    const pill = document.getElementById("statusPill");
-    pill.textContent = row.status || "Status unavailable";
+            history.replaceState({}, "", newUrl);
 
-    const timeline = document.getElementById("timelineSteps");
-    timeline.replaceChildren();
 
-    // Optional timeline_events column: JSON array of
-    // {"title":"Dispatched","description":"Package left origin facility","event_time":"2026-10-30T10:00:00Z"}
-    const events = Array.isArray(row.timeline_events) ? row.timeline_events : [];
-    if (events.length === 0) {
-      const note = document.createElement("p");
-      note.className = "muted";
-      note.textContent = "No detailed progress events have been added yet.";
-      timeline.appendChild(note);
-    } else {
-      events.forEach((event) => {
-        const item = document.createElement("div");
-        item.className = "timeline-item";
-        const title = document.createElement("strong");
-        title.textContent = event.title || "Shipment update";
-        const description = document.createElement("p");
-        description.textContent = event.description || "";
-        const time = document.createElement("small");
-        time.textContent = formatDate(event.event_time);
-        item.append(title, description, time);
-        timeline.appendChild(item);
-      });
+        } catch (error) {
+
+            console.error("Tracking error:", error);
+
+            showMessage(
+                "Unable to retrieve shipment: " + error.message,
+                true
+            );
+
+        } finally {
+
+            $("trackButton").disabled = false;
+
+        }
+
     }
 
-    errorBox.textContent = "";
-    result.hidden = false;
-    emptyState.hidden = true;
-    result.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const trackingNumber = input.value.trim();
-    if (!trackingNumber) return;
+    // ==========================================
+    // 7. INITIALIZE CUSTOMER DASHBOARD
+    // ==========================================
 
-    const button = form.querySelector("button");
-    button.disabled = true;
-    button.textContent = "Searching…";
-    errorBox.textContent = "";
+    async function initializeTracking() {
 
-    try {
-      const { data: sessionData, error: sessionError } = await client.auth.getSession();
-      if (sessionError || !sessionData.session) {
-        location.replace("index.html");
-        return;
-      }
+        // Check configuration.
 
-      // RLS must restrict rows to the signed-in customer's user_id.
-      const { data, error } = await client
-        .from("shipments")
-        .select("tracking_number, origin_city, origin_country, destination_city, destination_country, status, estimated_delivery, shipping_service, package_type, updated_at, timeline_events")
-        .eq("tracking_number", trackingNumber)
-        .eq("user_id", sessionData.session.user.id)
-        .maybeSingle();
+        if (
+            !window.supabase ||
+            !url ||
+            !key ||
+            url.includes("PASTE_YOUR") ||
+            key.includes("PASTE_YOUR")
+        ) {
 
-      if (error) throw error;
-      if (!data) {
-        result.hidden = true;
-        emptyState.hidden = false;
-        errorBox.textContent = "No shipment with that tracking number was found in your account.";
-      } else {
-        showShipment(data);
-      }
-    } catch (error) {
-      errorBox.textContent = "Could not retrieve shipment: " + (error.message || "Please try again.");
-    } finally {
-      button.disabled = false;
-      button.textContent = "Track package →";
+            showMessage(
+                "Supabase is not configured. Check config.js.",
+                true
+            );
+
+            return;
+        }
+
+
+        // Create Supabase client.
+
+        db = window.supabase.createClient(url, key);
+
+
+        // Verify login.
+
+        const {
+            data,
+            error
+        } = await db.auth.getSession();
+
+
+        if (error || !data.session) {
+
+            window.location.replace("index.html");
+
+            return;
+        }
+
+
+        currentUser = data.session.user;
+
+
+        $("accountEmail").textContent =
+            currentUser.email || "Signed in";
+
+
+        // Check administrator role.
+
+        const {
+            data: profile,
+            error: profileError
+        } = await db
+
+            .from("profiles")
+
+            .select("role")
+
+            .eq("id", currentUser.id)
+
+            .maybeSingle();
+
+
+        if (!profileError && profile && profile.role === "admin") {
+
+            $("adminLink").classList.remove("hidden");
+
+        }
+
+
+        // Sign out.
+
+        $("logoutButton").addEventListener(
+            "click",
+            async () => {
+
+                $("logoutButton").disabled = true;
+
+                const { error } = await db.auth.signOut();
+
+                if (error) {
+
+                    showMessage(error.message, true);
+
+                    $("logoutButton").disabled = false;
+
+                    return;
+                }
+
+                window.location.replace("index.html");
+
+            }
+        );
+
+
+        // Tracking form.
+
+        $("trackingForm").addEventListener(
+            "submit",
+            event => {
+
+                event.preventDefault();
+
+                const trackingNumber =
+                    $("trackingInput").value.trim();
+
+                trackShipment(trackingNumber);
+
+            }
+        );
+
+
+        // Support direct tracking links.
+
+        const params = new URLSearchParams(
+            window.location.search
+        );
+
+        const trackingNumber = params.get("tracking");
+
+        if (trackingNumber) {
+
+            $("trackingInput").value = trackingNumber;
+
+            trackShipment(trackingNumber);
+
+        }
+
     }
-  });
 
-  start();
+
+    // ==========================================
+    // 8. START APPLICATION
+    // ==========================================
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeTracking
+    );
+
+
 })();
+
+   
+   
